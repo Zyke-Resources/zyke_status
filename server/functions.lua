@@ -375,6 +375,8 @@ function SoftResetStatuses(plyId)
     end
 end
 
+exports("SoftResetStatuses", SoftResetStatuses)
+
 local playerHealAuth = {}
 
 -- Function to heal a player, and reset their stats
