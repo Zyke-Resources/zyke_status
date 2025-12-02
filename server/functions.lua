@@ -353,6 +353,8 @@ function ResetStatuses(plyId)
     end
 end
 
+exports("ResetStatuses", ResetStatuses)
+
 -- Runs onSoftReset and falls back to onReset for all statuses the player has registered
 ---@param plyId PlayerId
 function SoftResetStatuses(plyId)
