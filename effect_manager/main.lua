@@ -123,17 +123,46 @@ end
 -- Some effects are not queued, because we are not looking for a dominant value, we need to execute all of them, such as damage
 --- For example, if you are poisoned and have a broken leg, you should receive damage from both of them
 -- We run this in a character select to instantly run the previous session
-local inLoop = false
+
+---@type table<StatusName, {value: number, thresholdIdx: integer}>
+local prevEffects = {} -- Keep track of previous effects
+
+---@type number | nil
+local lastProcessedStatuses = nil
+local loopId = nil -- Current loop id that should remain active
+local processingStatuses = false -- Flag to check if we're currently processing the statuses, avoids timing issues when switching between loop ids
+
+local useDebug = Config.Settings.debug
 AddEventHandler("zyke_status:OnStatusFetched", function()
-    Wait(1)
+    -- Catches edge cases with milliseconds of difference when iterating the loop & when we want to launch a new loop
+    while (processingStatuses) do Wait(1) Z.debug("Waiting for statuses to finish processing...") end
 
-    ---@type table<StatusName, {value: number, thresholdIdx: integer}>
-    local prevEffects = {} -- Keep track of previous effects
+    loopId = Z.createUniqueId(10, nil, true)
 
-    inLoop = true
-    while (inLoop) do
-        local sleep = 250
-        local effectMultiplier = sleep / 1000
+    local threadLoopId = loopId
+    local firstIteration = true
+    while (true) do
+        if (useDebug == true) then
+            Z.debug(("In loop | loopId: %s | threadLoopId: %s"):format(loopId, threadLoopId))
+        end
+
+        local sleep = firstIteration and 0 or 1000
+        firstIteration = false
+        Wait(sleep)
+
+        if (loopId ~= threadLoopId) then break end
+
+        processingStatuses = true
+
+        if (not lastProcessedStatuses) then
+            lastProcessedStatuses = GetGameTimer() - sleep
+        end
+
+        local effectMultiplier = (GetGameTimer() - lastProcessedStatuses) / 1000
+
+        if (useDebug == true) then
+            Z.debug(("Effect multiplier: %s"):format(effectMultiplier))
+        end
 
         if (Cache.statuses) then
             ---@type table<StatusName, {value: number, thresholdIdx: integer}>
@@ -153,8 +182,7 @@ AddEventHandler("zyke_status:OnStatusFetched", function()
                 end
             end
 
-            -- Trigger on stop
-            -- TODO: We have to check the previous cache thing to make sure that we stop the effects that are no longer used based on the threshold changing, or is that part of the onStart function to also handle and remove the queue?
+            -- Trigger onStop
 
             -- We have to check if the effect is not available, or if the thresholdIdx has been changed, which means that the effects we would be executing would be incorrect
             for statusName, values in pairs(prevEffects) do
@@ -172,6 +200,8 @@ AddEventHandler("zyke_status:OnStatusFetched", function()
                     end
                 end
             end
+
+            -- Trigger onStart / onTick
 
             -- Trigger on start, note that we skip onTick if we hit onStart
             for statusName, values in pairs(availableEffects) do
@@ -194,15 +224,23 @@ AddEventHandler("zyke_status:OnStatusFetched", function()
             prevEffects = availableEffects
         end
 
-        Wait(sleep)
+        processingStatuses = false
+
+        if (loopId == threadLoopId) then
+            lastProcessedStatuses = GetGameTimer()
+        end
+    end
+
+    if (loopId == nil) then
+        lastProcessedStatuses = nil
     end
 end)
 
 AddEventHandler("zyke_lib:OnCharacterLogout", function()
     Z.debug("[Effects] Character logout, stopping effect loop.")
-    inLoop = false
+    loopId = nil
 end)
 
 AddEventHandler("zyke_status:OnPlayerStatusFrozen", function()
-    inLoop = false
+    loopId = nil
 end)
