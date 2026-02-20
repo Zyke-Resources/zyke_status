@@ -174,11 +174,13 @@ end
 ---@param statusNames StatusNames
 ---@return number
 function GetStatus(plyId, statusNames)
-    if (not Cache.statuses[plyId]) then return 0.0 end
-    if (not Cache.statuses[plyId][statusNames[1]]) then return 0.0 end
-
     local value = GetPlayerBaseStatusTable(plyId, statusNames[1])
-    return value and value.values?[statusNames[1] or statusNames[2]]?.value or 0.0
+    if (not value) then return 0.0 end
+
+    if (statusNames[2] ~= nil and value.values[statusNames[2]] ~= nil) then return value.values[statusNames[2]]?.value or 0.0 end
+    if (value.values[statusNames[1]] ~= nil) then return value.values[statusNames[1]]?.value or 0.0 end
+
+    return 0.0
 end
 
 exports("GetStatus", GetStatus)
