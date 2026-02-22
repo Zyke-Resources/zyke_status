@@ -352,8 +352,9 @@ function SoftResetStatuses(plyId)
                 Cache.existingStatuses[primary].onReset(plyId, {primary, statusName})
             end
         end
-    end
 
+        SyncPlayerStatus(plyId, primary)
+    end
 end
 
 local playerHealAuth = {}
