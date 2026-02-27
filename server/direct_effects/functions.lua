@@ -7,6 +7,7 @@ function EnsureDirectEffectsFromDatabase(plyId)
 	local directCalls = MySQL.scalar.await("SELECT direct_effects FROM zyke_status WHERE identifier = ?", {identifier})
 	local decoded = directCalls and json.decode(directCalls) or {}
 
+	Z.debug("[DirectEffects] Loaded direct effects from database for", plyId)
 	Cache.directEffects[plyId] = decoded
 end
 
@@ -52,6 +53,8 @@ end
 ---@param effects DirectEffectInput[]
 ---@param activationThreshold? integer | "prev" @"prev" to keep, nil/0 to restore, integer to set
 function AddDirectEffect(plyId, effects, activationThreshold)
+	Z.debug(("[DirectEffects] Adding %s effect(s) for %s"):format(#effects, plyId))
+
 	-- When adding an effect, we may already have a similar one in here
 	-- Make sure that we merge them if so, to lessen the iterations needed
 

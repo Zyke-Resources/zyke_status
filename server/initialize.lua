@@ -14,6 +14,8 @@ local function fetchStatusFromDatabase(plyId)
     local identifier = Z.getIdentifier(plyId)
     if (not identifier) then return end
 
+    Z.debug("[FetchStatus] Fetching status from database for", plyId, identifier)
+
     local dbStatus = MySQL.scalar.await("SELECT data FROM zyke_status WHERE identifier = ?", {identifier})
     local decoded = dbStatus and json.decode(dbStatus)
 
@@ -79,11 +81,13 @@ while (not QueriesExecuted) do Wait(10) end
 
 ---@param plyId PlayerId
 AddEventHandler("zyke_lib:OnCharacterSelect", function(plyId)
+    Z.debug("[CharacterSelect] Character selected for", plyId)
     initializePlayer(plyId)
 end)
 
 ---@param plyId PlayerId
 AddEventHandler("zyke_lib:OnCharacterLogout", function(plyId)
+    Z.debug("[CharacterLogout] Character logged out for", plyId)
     SavePlayerToDatabase(plyId)
     Cache.statuses[plyId] = nil
     Cache.directEffects[plyId] = nil

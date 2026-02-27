@@ -53,6 +53,8 @@ local funcs = {}
 ---@param key QueueKey
 ---@param functions EffectFunctions
 function RegisterQueueKey(key, functions)
+    Z.debug("[Queue] Registering queue key:", key)
+
     if (not Z.table.contains(queueKeys, key)) then
         queueKeys[#queueKeys+1] = key
     end
@@ -178,6 +180,10 @@ end
 function RemoveFromQueue(queueKey, key, value)
     local queue = queues[queueKey]
     if (not queue) then return false end
+
+    if (Config.Settings.debug) then
+        Z.debug("[Queue] Removing from queue:", queueKey, key)
+    end
 
     for i = 1, #queue do
         if (value == nil or queue[i].value == value) then
@@ -362,6 +368,8 @@ end
 -- Completely clears the queue effect, which will then also run the reset for all effects
 -- If you wish to clear all of it really quickly, such as when switching characters
 function ClearEffectQueue()
+    Z.debug("[Queue] Clearing all effect queues.")
+
     for key in pairs(queues) do
         queues[key] = nil
     end

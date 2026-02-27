@@ -5,14 +5,26 @@ CompatibilityFuncs = {}
 -- esx_status
 -- Default max is 1000000, we use 100.0
 RegisterNetEvent("esx_status:set", function(name, value)
+    if (Config.Settings.debug) then
+        Z.debug(("[Compat] esx_status:set %s to %s"):format(name, value))
+    end
+
     TriggerServerEvent("zyke_status:compatibility:SetStatus", name, value)
 end)
 
 RegisterNetEvent("esx_status:add", function(name, value)
+    if (Config.Settings.debug) then
+        Z.debug(("[Compat] esx_status:add %s by %s"):format(name, value))
+    end
+
     TriggerServerEvent("zyke_status:compatibility:AddStatus", name, value)
 end)
 
 RegisterNetEvent("esx_status:remove", function(name, value)
+    if (Config.Settings.debug) then
+        Z.debug(("[Compat] esx_status:remove %s by %s"):format(name, value))
+    end
+
     TriggerServerEvent("zyke_status:compatibility:RemoveStatus", name, value)
 end)
 
@@ -97,22 +109,26 @@ end)
 -- We catch this to heal the player and reset our statuses properly
 -- We advise you to disable the esx_basicneeds equivilent if you know what you are doing, but not necessary
 RegisterNetEvent("esx_basicneeds:healPlayer", function()
+    Z.debug("[Compat] esx_basicneeds:healPlayer triggered.")
     TriggerServerEvent("zyke_status:compatibility:HealPlayer")
 end)
 
 -- We catch this to heal the player and reset our statuses properly
 -- We advise you to disable the esx_basicneeds equivilent if you know what you are doing, but not necessary
 RegisterNetEvent("esx_basicneeds:resetStatus", function()
+    Z.debug("[Compat] esx_basicneeds:resetStatus triggered.")
     TriggerServerEvent("zyke_status:compatibility:SoftResetStatuses")
 end)
 
 -- Since all of their healing is done in their ambulance resource, we will just soft reset afterwards
 RegisterNetEvent("hospital:client:Revive", function()
+    Z.debug("[Compat] hospital:client:Revive triggered.")
     TriggerServerEvent("zyke_status:compatibility:SoftResetStatuses")
 end)
 
 -- Since all of their healing is done in their ambulance resource, we will just soft reset afterwards
 RegisterNetEvent("hospital:client:TreatWounds", function()
+    Z.debug("[Compat] hospital:client:TreatWounds triggered.")
     TriggerServerEvent("zyke_status:compatibility:SoftResetStatuses")
 end)
 
@@ -120,13 +136,16 @@ end)
 -- It is triggered from their server command -> client, so we catch these events & dispatch it to our server-event to handle it properly
 -- If you know what you are doing, you can disable these & add in your own custom implementation to never leave the server for this, but that is not possible by default
 RegisterNetEvent("wasabi_ambulance:revive", function()
+    Z.debug("[Compat] wasabi_ambulance:revive triggered.")
     TriggerServerEvent("zyke_status:compatibility:HealPlayer")
 end)
 
 RegisterNetEvent("wasabi_ambulance:heal", function()
+    Z.debug("[Compat] wasabi_ambulance:heal triggered.")
     TriggerServerEvent("zyke_status:compatibility:HealPlayer")
 end)
 
 RegisterNetEvent("wasabi_ambulance:resetStatus", function()
+    Z.debug("[Compat] wasabi_ambulance:resetStatus triggered.")
     TriggerServerEvent("zyke_status:compatibility:HealPlayer")
 end)

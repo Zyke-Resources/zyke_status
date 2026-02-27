@@ -14,6 +14,8 @@ function RegisterEffectFunctions(name)
     local statusSettings = GetStatusSettings(primary, secondary)
     if (not statusSettings) then return end
 
+    Z.debug("[Effects] Registering effect functions for", name)
+
     EffectFunctions[name] = {
         onStart = function(val, thresholdIdx)
             -- Loops all of the existing queue keys, so that we can run all of the effects and queue them
@@ -63,6 +65,10 @@ end
 ---@param thresholdIdx integer
 function ExecuteStatusEffect(name, fnType, val, thresholdIdx)
     local _, _, full = SeparateStatusName(name)
+
+    if (Config.Settings.debug) then
+        Z.debug(("[Effects] Executing %s for %s (threshold: %s, val: %s)"):format(fnType, full, thresholdIdx, val))
+    end
 
     -- Temp to ensure the effects exist
     if (not EffectFunctions[full] or not EffectFunctions[full][fnType]) then
@@ -152,6 +158,7 @@ AddEventHandler("zyke_status:OnStatusFetched", function()
 end)
 
 AddEventHandler("zyke_lib:OnCharacterLogout", function()
+    Z.debug("[Effects] Character logout, stopping effect loop.")
     inLoop = false
 end)
 

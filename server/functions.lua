@@ -64,6 +64,10 @@ end
 ---@param plyId PlayerId
 ---@param primary StatusName | StatusName[]
 function SyncPlayerStatus(plyId, primary)
+    if (Config.Settings.debug) then
+        Z.debug("[SyncPlayerStatus] Syncing", type(primary) == "table" and table.concat(primary, ", ") or primary, "for", plyId)
+    end
+
     local createdQueue = false
     if (not clientSyncQueue[plyId]) then
         clientSyncQueue[plyId] = {toSync = {}}
@@ -195,6 +199,10 @@ function RemoveFromStatus(plyId, statusNames, amount, skipEnsuring)
     local isValid = IsValidStatus(statusNames)
     if (not isValid) then print(("Invalid status has attempted to be removed: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
 
+    if (Config.Settings.debug) then
+        Z.debug(("[RemoveFromStatus] Removing %s from %s.%s for %s"):format(amount, statusNames[1], statusNames[2] or statusNames[1], plyId))
+    end
+
     if (not skipEnsuring) then
         EnsurePlayerSubStatus(plyId, statusNames)
     end
@@ -219,6 +227,10 @@ function SetStatusValue(plyId, statusNames, amount, skipEnsuring)
 
     local isValid = IsValidStatus(statusNames)
     if (not isValid) then print(("Invalid status has attempted to be set: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
+
+    if (Config.Settings.debug) then
+        Z.debug(("[SetStatusValue] Setting %s.%s to %s for %s"):format(statusNames[1], statusNames[2] or statusNames[1], amount, plyId))
+    end
 
     if (Cache.existingStatuses[statusNames[1]].onSet) then
         if (not skipEnsuring) then
@@ -274,6 +286,10 @@ function AddToStatus(plyId, statusNames, amount, skipEnsuring)
 
     local isValid = IsValidStatus(statusNames)
     if (not isValid) then print(("Invalid status has attempted to be added: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
+
+    if (Config.Settings.debug) then
+        Z.debug(("[AddToStatus] Adding %s to %s.%s for %s"):format(amount, statusNames[1], statusNames[2] or statusNames[1], plyId))
+    end
 
     if (not skipEnsuring) then
         EnsurePlayerSubStatus(plyId, statusNames)
@@ -392,6 +408,8 @@ exports("HealPlayer", HealPlayer)
 ---@param plyId PlayerId
 ---@param actions {[1]: BulkAction, [2]: StatusNames, [3]: number}[]
 function BulkAction(plyId, actions)
+    Z.debug(("[BulkAction] Processing %s actions for %s"):format(#actions, plyId))
+
     for i = 1, #actions do
         if (actions[i][1] == "add") then
             AddToStatus(plyId, actions[i][2], actions[i][3])

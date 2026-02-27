@@ -9,10 +9,12 @@ Cache = {
 EffectFunctions = {}
 
 local function init()
+    Z.debug("[Init] Fetching player status and direct effects.")
     Cache.statuses = Z.callback.await("zyke_status:GetPlayerStatus")
     Cache.directEffects = Z.callback.await("zyke_status:GetPlayerDirectEffects")
     TriggerEvent("zyke_status:OnDirectEffectsUpdated", Cache.directEffects, {})
 
+    Z.debug("[Init] Status fetched successfully.")
     TriggerEvent("zyke_status:OnStatusFetched")
 end
 

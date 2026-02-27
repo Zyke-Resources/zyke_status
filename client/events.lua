@@ -1,6 +1,10 @@
 local function syncStatus(statuses)
     if (not Cache.statuses) then Cache.statuses = {} end
 
+    if (Config.Settings.debug) then
+        Z.debug("[SyncStatus] Received status sync from server.")
+    end
+
     for name, status in pairs(statuses) do
         if (status == "nil") then
             Cache.statuses[name] = nil
@@ -33,6 +37,7 @@ else
 end
 
 RegisterNetEvent("zyke_lib:OnCharacterLogout", function()
+    Z.debug("[CharacterLogout] Clearing client cache.")
     -- Go through all statuses and run the reset for the effects
     -- This is to allow smooth character switching
     ClearEffectQueue()
@@ -41,6 +46,7 @@ RegisterNetEvent("zyke_lib:OnCharacterLogout", function()
 end)
 
 AddEventHandler("zyke_status:OnPlayerStatusFrozen", function()
+    Z.debug("[StatusFrozen] Clearing effect queue.")
     ClearEffectQueue()
 end)
 
@@ -55,6 +61,10 @@ local keyPrefix = "direct_effect:"
 ---@param totalDuration number @Total duration of all effects together
 ---@param activationThreshold? integer | "prev" @"prev" to keep, nil/0 to restore, integer to set
 RegisterNetEvent("zyke_status:OnDirectEffectsUpdated", function(currEffects, removedEffects, totalDuration, activationThreshold)
+    if (Config.Settings.debug) then
+        Z.debug("[DirectEffects] Received direct effects update, removed:", #removedEffects)
+    end
+
     Cache.directEffects = currEffects
     Cache.directEffectsTotalDuration = totalDuration
 
