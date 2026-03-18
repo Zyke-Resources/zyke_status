@@ -17,7 +17,7 @@ RegisterNetEvent("zyke_status:compatibility:SetStatus", function(name, value)
         Z.debug(("%s set status %s to %s via compatibility."):format(source, name, value / 10000))
     end
 
-    if (not existingESXStatuses[name]) then print("Attempting to set invalid status:", name) return end
+    if (not existingESXStatuses[name]) then Z.debug("Attempting to set invalid status:", name) return end
 
     SetStatusValue(source, {name}, value / 10000)
 end)
@@ -27,7 +27,7 @@ RegisterNetEvent("zyke_status:compatibility:AddStatus", function(name, value)
         Z.debug(("%s added %s to status and gained %s via compatibility."):format(source, name, value / 10000))
     end
 
-    if (not existingESXStatuses[name]) then print("Attempting to set invalid status:", name) return end
+    if (not existingESXStatuses[name]) then Z.debug("Attempting to set invalid status:", name) return end
 
     AddToStatus(source, {name}, value / 10000)
 end)
@@ -37,7 +37,7 @@ RegisterNetEvent("zyke_status:compatibility:RemoveStatus", function(name, value)
         Z.debug(("%s removed %s from status and gained %s via compatibility."):format(source, name, value / 10000))
     end
 
-    if (not existingESXStatuses[name]) then print("Attempting to set invalid status:", name) return end
+    if (not existingESXStatuses[name]) then Z.debug("Attempting to set invalid status:", name) return end
 
     RemoveFromStatus(source, {name}, value / 10000)
 end)

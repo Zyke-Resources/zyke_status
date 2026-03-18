@@ -33,7 +33,7 @@ end
 ---@return table | nil
 function GetStatusSettings(primary, secondary)
     local baseEffect = Config.Status[primary]
-    if (not baseEffect) then print(("Effect could not be found:"):format(primary, secondary)) return nil end
+    if (not baseEffect) then Z.debug(("Effect could not be found:"):format(primary, secondary)) return nil end
 
     return baseEffect[secondary] or baseEffect.base
 end
@@ -96,7 +96,7 @@ function EnsureEffectThresholdOrder()
 
             for i = 2, #values.effect do
                 if (values.effect[i].threshold == values.effect[i - 1].threshold) then
-                    print(("^1[WARNING] ^3You have multiple threshold effects registered at the same threshold. Please adjust the values to avoid issues. Status: %s.%s^7"):format(key, subName))
+                    Z.debug(("^1[WARNING] ^3You have multiple threshold effects registered at the same threshold. Please adjust the values to avoid issues. Status: %s.%s^7"):format(key, subName))
                 end
             end
         end

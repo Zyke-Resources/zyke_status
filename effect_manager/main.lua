@@ -30,8 +30,18 @@ function RegisterEffectFunctions(name)
             -- So for the thresholdIdxs, simply send in what thresholdIdx to run, and it will add all of them to the queue
             local keys = GetExistingQueueKeys()
             for i = 1, #keys do
-                if (statusSettings.effect[thresholdIdx][keys[i]]) then
-                    AddToQueue(keys[i], getQueueId(thresholdIdx), thresholdIdx)
+                local effectValue = statusSettings.effect[thresholdIdx][keys[i]]
+                if (effectValue) then
+                    -- For reactions: avoid spamming if you surpass multiple thresholds at once
+                    -- Only play the highest threshold's reaction, unless 'force' is set on the reaction config
+                    -- This mirrors the notification anti-spam system
+                    if (keys[i] == "reaction") then
+                        if (highestThresholdIdx == thresholdIdx or effectValue.force) then
+                            AddToQueue(keys[i], getQueueId(thresholdIdx), thresholdIdx)
+                        end
+                    else
+                        AddToQueue(keys[i], getQueueId(thresholdIdx), thresholdIdx)
+                    end
                 end
             end
 

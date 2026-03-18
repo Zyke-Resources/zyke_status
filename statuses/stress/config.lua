@@ -10,7 +10,6 @@ Config.Status.stress = {
                 screenEffect = {value = "BarryFadeOut", intensity = 0.1},
                 cameraShaking = {value = "DRUNK_SHAKE", intensity = 0.05},
                 notification = {value = "stress1", play = "start"}
-                -- notification = {value = "stress1", play = "start", force = true} -- You can use force here to forcefully always play this notification even if you surpass multiple thresholds in one go
             },
             {
                 threshold = 20.0,

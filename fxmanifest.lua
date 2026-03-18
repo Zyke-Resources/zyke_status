@@ -70,6 +70,8 @@ loader {
     "server/commands/heal.lua",
     "server/commands/freeze_status.lua",
 
+    "server/reaction_sounds.lua",
+
     "server/initialize.lua",
 
     -- Client only
@@ -89,6 +91,7 @@ loader {
     "client:effect_manager/effects/blockJumping.lua",
     "client:effect_manager/effects/blockSprinting.lua",
     "client:effect_manager/effects/stumble.lua",
+    "client:effect_manager/effects/reaction.lua",
 
     "client/small_resources/driving.lua",
     "client/small_resources/shooting.lua",

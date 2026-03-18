@@ -197,7 +197,7 @@ function RemoveFromStatus(plyId, statusNames, amount, skipEnsuring)
     if (Cache.statuses[plyId] == nil) then return end
 
     local isValid = IsValidStatus(statusNames)
-    if (not isValid) then print(("Invalid status has attempted to be removed: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
+    if (not isValid) then Z.debug(("Invalid status has attempted to be removed: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
 
     if (Config.Settings.debug) then
         Z.debug(("[RemoveFromStatus] Removing %s from %s.%s for %s"):format(amount, statusNames[1], statusNames[2] or statusNames[1], plyId))
@@ -226,7 +226,7 @@ function SetStatusValue(plyId, statusNames, amount, skipEnsuring)
     if (Cache.statuses[plyId] == nil) then return end
 
     local isValid = IsValidStatus(statusNames)
-    if (not isValid) then print(("Invalid status has attempted to be set: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
+    if (not isValid) then Z.debug(("Invalid status has attempted to be set: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
 
     if (Config.Settings.debug) then
         Z.debug(("[SetStatusValue] Setting %s.%s to %s for %s"):format(statusNames[1], statusNames[2] or statusNames[1], amount, plyId))
@@ -285,7 +285,7 @@ function AddToStatus(plyId, statusNames, amount, skipEnsuring)
     if (Cache.statuses[plyId] == nil) then return end
 
     local isValid = IsValidStatus(statusNames)
-    if (not isValid) then print(("Invalid status has attempted to be added: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
+    if (not isValid) then Z.debug(("Invalid status has attempted to be added: %s %s, invoker: %s"):format(tostring(statusNames[1]), tostring(statusNames[2] or statusNames[1]), GetInvokingResource())) return end
 
     if (Config.Settings.debug) then
         Z.debug(("[AddToStatus] Adding %s to %s.%s for %s"):format(amount, statusNames[1], statusNames[2] or statusNames[1], plyId))
@@ -394,7 +394,7 @@ end
 
 RegisterNetEvent("zyke_status:OnHealPlayer", function()
     if (not playerHealAuth[source]) then
-        print(("^1[WARNING] Player %s has ran the healing event without being authorized to do so. Possible exploit attempt. ^7"):format(source))
+        Z.debug(("^1[WARNING] Player %s has ran the healing event without being authorized to do so. Possible exploit attempt. ^7"):format(source))
     end
 
     SyncPlayerStatus(source, GetAllPrimaryStatuses())
@@ -422,7 +422,7 @@ function BulkAction(plyId, actions)
         elseif (actions[i][1] == "set") then
             SetStatusValue(plyId, actions[i][2], actions[i][3])
         else
-            print(("Player %s attempted to trigger an incorrect action:"):format(plyId), json.encode(actions[i]))
+            Z.debug(("Player %s attempted to trigger an incorrect action:"):format(plyId), json.encode(actions[i]))
         end
     end
 end

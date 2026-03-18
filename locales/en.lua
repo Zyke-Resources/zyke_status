@@ -15,6 +15,11 @@ return {
     ["stress4"] = {msg = "You are feeling extremely stressed.", type = "error"},
     ["stress5"] = {msg = "You are feeling critically stressed.", type = "error"},
 
+    ["hunger1"] = {msg = "Your stomach is starting to growl.", type = "info"},
+    ["hunger2"] = {msg = "You are feeling very hungry.", type = "error"},
+    ["hunger3"] = {msg = "You are starving.", type = "error"},
+    ["hunger4"] = {msg = "You are dying of starvation.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Invalid amount.", type = "error"},
     ["incorrectAction"] = {msg = "Incorrect action input", type = "error"},

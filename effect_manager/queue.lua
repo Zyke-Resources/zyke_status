@@ -11,10 +11,11 @@
 ---| "strength"
 ---| "walkingStyle"
 ---| "stumble"
+---| "reaction"
 
 ---@alias QueueData { value: RichEffectValue }
 
----@alias RichEffectValue BlockJumpingValue | BlockSprintingValue | BlurryVisionValue | CameraShakingValue | MovementSpeedValue | ScreenEffectValue | StrengthValue | StumbleValue | WalkingStyleValue
+---@alias RichEffectValue BlockJumpingValue | BlockSprintingValue | BlurryVisionValue | CameraShakingValue | MovementSpeedValue | ScreenEffectValue | StrengthValue | StumbleValue | WalkingStyleValue | ReactionValue
 
 ---@alias EffectValueInput string | number | boolean | RichEffectValue
 

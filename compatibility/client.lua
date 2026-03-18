@@ -48,7 +48,7 @@ local function convertStatus(name)
                 Z.debug("Attempting to create a player base status, but the player is not cached, could be critical!")
             end
         else
-            print("^1[WARNING] Attempting to create a player base status, but the player is not cached, could be critical! Enable dummy returns or fix the code grabbing this data.^7")
+            Z.debug("^1[WARNING] Attempting to create a player base status, but the player is not cached, could be critical! Enable dummy returns or fix the code grabbing this data.^7")
         end
 
         return defaultReturn
