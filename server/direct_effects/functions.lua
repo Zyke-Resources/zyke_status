@@ -78,6 +78,28 @@ function AddDirectEffect(plyId, effects, activationThreshold)
 				local newDur = effects[i].duration + (plyEffects[effects[i].name]?[1]?.duration or 0)
 
 				plyEffects[effects[i].name][1] = {value = newVal, duration = newDur}
+			elseif (type(newVal) == "table") then
+				-- For rich effect values (including reactions with animation/sound tables)
+				-- We compare via json.encode to check for structural equality
+				local newValEncoded = json.encode(newVal)
+				local hasAdded = false
+
+				for j = 1, #plyEffects[effects[i].name] do
+					local effect = plyEffects[effects[i].name][j]
+					local currValEncoded = json.encode(effect.value)
+
+					if (newValEncoded == currValEncoded) then
+						-- Same table value, merge durations
+						local newDur = effect.duration + effects[i].duration
+						plyEffects[effects[i].name][j] = {value = newVal, duration = newDur}
+						hasAdded = true
+						break
+					end
+				end
+
+				if (not hasAdded) then
+					plyEffects[effects[i].name][#plyEffects[effects[i].name]+1] = {value = newVal, duration = effects[i].duration}
+				end
 			else
 				local newValType = type(newVal)
 
@@ -131,20 +153,6 @@ end
 
 exports("AddDirectEffect", AddDirectEffect)
 
--- RegisterCommand("test_direct_effects", function(plyId)
--- 	AddDirectEffect(plyId, {
--- 		{
--- 			name = "movementSpeed",
--- 			value = math.random(100, 149) / 100,
--- 			duration = math.random(1, 100)
--- 		},
--- 		{
--- 			name = "cameraShaking",
--- 			value = true,
--- 			duration = math.random(1, 100)
--- 		}
--- 	})
--- end, false)
 
 -- Temporary testing loop to manage the effects
 CreateThread(function()

@@ -71,7 +71,7 @@ RegisterNetEvent("zyke_status:OnDirectEffectsUpdated", function(currEffects, rem
     Cache.directEffectsTotalDuration = totalDuration
 
     for i = 1, #removedEffects do
-        RemoveFromQueue(removedEffects[i], keyPrefix .. removedEffects[i], nil)
+        RemoveFromQueue(removedEffects[i], keyPrefix .. removedEffects[i])
     end
 
     for queueKey, value in pairs(currEffects) do
@@ -79,6 +79,8 @@ RegisterNetEvent("zyke_status:OnDirectEffectsUpdated", function(currEffects, rem
 
         if (not DoseKeyExistsInQueueKey(queueKey, key)) then
             AddToQueue(queueKey, key, nil, value, activationThreshold)
+        else
+            UpdateQueueValue(queueKey, key, value)
         end
     end
 end)

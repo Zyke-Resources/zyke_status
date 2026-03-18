@@ -25,7 +25,7 @@
 ---@field name QueueKey
 
 ---@class DirectEffect
----@field value number | integer | string | boolean
+---@field value number | integer | string | boolean | RichEffectValue
 ---@field duration number -- Seconds
 
 ---@class ServerCache
@@ -35,7 +35,7 @@
 
 ---@class ClientCache
 ---@field statuses table<StatusName, PlayerStatuses> | nil @nil when unloaded
----@field directEffects table<QueueKey, integer | number | string | boolean> | nil @nil when unloaded
+---@field directEffects table<QueueKey, EffectValueInput> | nil @nil when unloaded
 ---@field directEffectsTotalDuration number | nil @nil when unloaded
 
 ---@alias PlayerId integer

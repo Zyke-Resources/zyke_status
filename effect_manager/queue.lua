@@ -197,7 +197,7 @@ end
 ---@param queueKey QueueKey
 ---@param queueId string
 function DoseKeyExistsInQueueKey(queueKey, queueId)
-    return queues[queueKey][queueId] ~= nil
+    return queues[queueKey] ~= nil and queues[queueKey][queueId] ~= nil
 end
 
 ---@param queueKey QueueKey
@@ -222,6 +222,26 @@ function RemoveFromQueue(queueKey, queueId)
 
     TriggerEvent("zyke_status:OnQueueUpdated")
 end
+
+--- Updates the value of an existing queue entry without removing and re-adding it
+---@param queueKey QueueKey
+---@param queueId string
+---@param value EffectValueInput
+function UpdateQueueValue(queueKey, queueId, value)
+    local queue = queues[queueKey]
+    if (not queue or not queue[queueId]) then
+        Z.debug("Cannot update queue value, entry does not exist for:", queueKey, queueId)
+        return false
+    end
+
+    ---@diagnostic disable-next-line: param-type-mismatch
+    local normalized = funcs[queueKey].normalize(value)
+    queue[queueId].value = normalized
+
+    TriggerEvent("zyke_status:OnQueueUpdated")
+end
+
+exports("UpdateQueueValue", UpdateQueueValue)
 
 ---@param toRemove {[1]: string, [2]: string}[]
 function RemoveFromQueueBulk(toRemove)
