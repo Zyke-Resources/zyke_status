@@ -1,8 +1,33 @@
 -- Fades a blurry overlay every now and then
 
+---@class BlurryVisionValue
+---@field value boolean
+
 local active = false
 
 RegisterQueueKey("blurryVision", {
+    ---@param val BlurryVisionValue | boolean
+    ---@return BlurryVisionValue
+    normalize = function(val)
+        local _type = type(val)
+
+        if (_type == "boolean") then
+            return {value = val}
+        elseif (_type == "table") then
+            return {value = val.value}
+            ---@diagnostic disable-next-line: missing-return @ table or boolean, always returns something
+        end
+    end,
+    ---@param thresholdIdx1 integer
+    ---@param thresholdIdx2 integer
+    ---@return integer
+    compare = function(_, _, thresholdIdx1, thresholdIdx2)
+        -- Could support intensity metadata in future
+        -- For now, use threshold
+        if (thresholdIdx1 > thresholdIdx2) then return -1
+        elseif (thresholdIdx1 < thresholdIdx2) then return 1
+        else return 0 end
+    end,
     onStart = function()
         active = true
 

@@ -11,8 +11,19 @@
 ---| "strength"
 ---| "walkingStyle"
 ---| "stumble"
+---| "reaction"
 
----@alias QueueData {value: string, keys: table<string, integer>}
+---@alias QueueData { value: RichEffectValue }
+
+---@alias RichEffectValue BlockJumpingValue | BlockSprintingValue | BlurryVisionValue | CameraShakingValue | MovementSpeedValue | ScreenEffectValue | StrengthValue | StumbleValue | WalkingStyleValue | ReactionValue
+
+---@alias EffectValueInput string | number | boolean | RichEffectValue
+
+---@alias CompareFunction fun(val1: RichEffectValue, val2: RichEffectValue, thresholdIdx1: integer, thresholdIdx2: integer): integer
+--- Returns -1 if val1 wins, 1 if val2 wins, 0 to use threshold fallback
+
+---@alias NormalizeFunction fun(value: RichEffectValue): RichEffectValue
+--- Adds default values for missing metadata fields and validates required fields
 
 -- Total seconds of all direct effects together before can start actually triggering them
 -- This is to prevent effects from only triggering for a few seconds unless we specifically want that
@@ -23,7 +34,7 @@
 local thresholdToActivate = 0
 local hasActivatedEffects = false
 
----@type table<QueueKey, QueueData[]>
+---@type table<QueueKey, table<string, QueueData>>
 local queues = {}
 
 -- Array of the keys in queues
@@ -31,7 +42,7 @@ local queues = {}
 local queueKeys = {}
 
 -- Cache the previously ran effects, so we know when to run the reset function
----@type table<QueueKey, string | number | integer> @Caches the effect value, to check start/reset
+---@type table<QueueKey, {queueId: string, value: RichEffectValue}> @Caches the effect value, to check start/reset
 local prevEffects = {}
 
 -- onResourceStop runs when the resource stops
@@ -41,14 +52,38 @@ local prevEffects = {}
 -- onStop runs when a specific effect value has stopped, for example, switching between two different screenEffects, it will be ran once for the effect that was stopped, not that this will also run when reset runs, if the effect is ran
 
 ---@class EffectFunctions
+---@field compare CompareFunction Comparison function to determine dominant value
+---@field normalize NormalizeFunction Normalization/validation function to add defaults and validate
 ---@field onResourceStop fun()?
----@field onTick fun(value: string | number | integer)?
+---@field onTick fun(value: RichEffectValue, queueId: string, effectMultiplier: number)?
 ---@field reset fun()?
----@field onStart fun(value: string | number | integer)?
----@field onStop fun(value: string | number | integer)?
+---@field onStart fun(value: RichEffectValue, queueId: string, effectMultiplier: number)?
+---@field onStop fun(value: RichEffectValue, queueId: string, effectMultiplier: number)?
 
 ---@type table<QueueKey, EffectFunctions>
 local funcs = {}
+
+-- Deep comparison for rich effect values
+-- Returns true if both represent the same effect with same metadata
+---@param val1 RichEffectValue
+---@param val2 RichEffectValue
+---@return boolean
+local function richValuesEqual(val1, val2)
+    if (val1 == nil and val2 == nil) then return true end
+    if (val1 == nil or val2 == nil) then return false end
+
+    -- Compare all fields in val1
+    for k, v in pairs(val1) do
+        if (val2[k] ~= v) then return false end
+    end
+
+    -- Compare all fields in val2 (catch extra fields)
+    for k, v in pairs(val2) do
+        if (val1[k] ~= v) then return false end
+    end
+
+    return true
+end
 
 ---@param key QueueKey
 ---@param functions EffectFunctions
@@ -60,10 +95,13 @@ function RegisterQueueKey(key, functions)
     end
 
     funcs[key] = {
+        compare = functions.compare,
+        normalize = functions.normalize,
         onResourceStop = functions.onResourceStop,
         onTick = functions.onTick,
         reset = functions.reset,
-        onStart = functions.onStart
+        onStart = functions.onStart,
+        onStop = functions.onStop
     }
 end
 
@@ -76,12 +114,25 @@ AddEventHandler("onResourceStop", function(resName)
 end)
 
 ---@param queueKey QueueKey
----@param key string
+---@param queueId string
 ---@param thresholdIdx? integer @Required if there is no value
 ---@param value? integer | number | string | boolean
 ---@param newThresholdToActivate? integer | "prev" @"prev" to keep, nil/0 to restore, integer to set, total seconds of all effects together before can start actually triggering them
-function AddToQueue(queueKey, key, thresholdIdx, value, newThresholdToActivate)
-    Z.debug("Attempting to queue...", queueKey, key, value)
+function AddToQueue(queueKey, queueId, thresholdIdx, value, newThresholdToActivate)
+    if (Config.Settings.debug == true) then
+        Z.debug("Attempting to queue...", json.encode({
+            queueKey = queueKey,
+            queueId = queueId,
+            thresholdIdx = thresholdIdx,
+            value = value,
+            newThresholdToActivate = newThresholdToActivate
+        }, {indent = true}))
+    end
+
+    if (queues[queueKey] and queues[queueKey][queueId]) then
+        error(("Queue already exists for queueKey: '%s' and queueId: '%s'"):format(queueKey, queueId))
+        return false
+    end
 
     -- This threshold part is a little messy and will probably be refactored in the future, but the concept is working
 
@@ -110,7 +161,7 @@ function AddToQueue(queueKey, key, thresholdIdx, value, newThresholdToActivate)
     if (not value) then
         -- If we don't provide a value, that means we are using a static effect registered
         if (thresholdIdx) then
-            local primary, secondary = SeparateStatusName(key)
+            local primary, secondary = SeparateStatusName(queueId)
             local statusSettings = GetStatusSettings(primary, secondary)
             if (not statusSettings) then return end
 
@@ -123,34 +174,17 @@ function AddToQueue(queueKey, key, thresholdIdx, value, newThresholdToActivate)
 
     if (not value) then Z.debug("No value found...") return false end
 
+    -- Normalize
+    ---@diagnostic disable-next-line: cast-local-type, param-type-mismatch
+    value = funcs[queueKey].normalize(value)
+
     local queue = queues[queueKey]
     if (not queue) then
         queue = {}
         queues[queueKey] = queue
     end
 
-    local idx
-    for i = 1, #queue do
-        if (queue[i].value == value) then
-            idx = i
-            break
-        end
-    end
-
-    -- If the index can be found, insert your key into that list of keys
-    if (idx ~= nil) then
-        -- Append key or add to counter
-        if (queue[idx].keys[key]) then
-            queue[idx].keys[key] += 1
-        else
-            queue[idx].keys[key] = 1
-        end
-    else
-        -- If the index could not be found, insert
-        table.insert(queue, #queue+1, {
-            value = value, keys = {[key] = 1}
-        })
-    end
+    queue[queueId] = {value = value}
 
     TriggerEvent("zyke_status:OnQueueUpdated")
 end
@@ -161,51 +195,32 @@ end
 
 -- Checks if the key exists in the queueKey data
 ---@param queueKey QueueKey
----@param key string
-function DoseKeyExistsInQueueKey(queueKey, key)
-    if (not queues[queueKey]) then return false end
-
-    for i = 1, #queues[queueKey] do
-        if (queues[queueKey][i].keys[key]) then
-            return true
-        end
-    end
-
-    return false
+---@param queueId string
+function DoseKeyExistsInQueueKey(queueKey, queueId)
+    return queues[queueKey][queueId] ~= nil
 end
 
 ---@param queueKey QueueKey
----@param key string
----@param value? string @You only need to provide this if you are using the same key for two different effects under the same queueKey, otherwise it will pick the first one it finds
-function RemoveFromQueue(queueKey, key, value)
+---@param queueId string
+function RemoveFromQueue(queueKey, queueId)
+    Z.debug("Attempting to remove from queue...", json.encode({
+        queueKey = queueKey,
+        queueId = queueId,
+    }, {indent = true}))
+
     local queue = queues[queueKey]
-    if (not queue) then return false end
-
-    if (Config.Settings.debug) then
-        Z.debug("[Queue] Removing from queue:", queueKey, key)
+    if (not queue) then
+        Z.debug("Queue does not exist for queueKey:", queueKey)
+        return false
     end
 
-    for i = 1, #queue do
-        if (value == nil or queue[i].value == value) then
-            if (queue[i].keys[key]) then
-                queue[i].keys[key] -= 1
-
-                -- If the counter hit 0, check if any other keys exist, otherwise remove the effect
-                if (queue[i].keys[key] == 0) then
-                    queue[i].keys[key] = nil
-                    if (Z.table.count(queue[i].keys) == 0) then
-                        table.remove(queue, i)
-                    end
-                end
-
-                if (#queue == 0) then
-                    queues[queueKey] = nil
-                end
-
-                return
-            end
-        end
+    queues[queueKey][queueId] = nil
+    if (not Z.table.doesTableHaveEntries(queues[queueKey])) then
+        Z.debug(("Queue for '%s' is now empty, removing queue"):format(queueKey))
+        queues[queueKey] = nil
     end
+
+    TriggerEvent("zyke_status:OnQueueUpdated")
 end
 
 ---@param toRemove {[1]: string, [2]: string}[]
@@ -230,51 +245,66 @@ for category, values in pairs(Config.EffectHierarchy) do
     end
 end
 
--- Grabs the index, or returns the length + 1 for an effect in the hierarchy
----@param category string
----@param value string
-local function getHierarchyIndex(category, value)
-    if (not effectHierarchy[category]) then return 1 end
+---@param queueId string
+---@return integer | nil
+local function extractThresholdFromQueueId(queueId)
+    local thresholdIdxStr = queueId:match(";(%d+)$")
+    if (not thresholdIdxStr) then return nil end
 
-    return effectHierarchy[category][value] or #Config.EffectHierarchy[category]
+    return math.tointeger(thresholdIdxStr)
 end
 
 -- Gets the effect that should be played this tick
--- Prioritizes order in queue, if effects have the same key count, it will use the earliest one
--- The queue order does not matter if the effect has the most keys, it will be chosen as it is the most relevant one to use
+-- Uses the registered compare function to determine dominance
 ---@param queueKey QueueKey
----@return integer | nil @key
-local function getDominantValue(queueKey)
+---@return string | nil @key of dominant value
+local function getDominantValueQueueId(queueKey)
     local queue = queues[queueKey]
     if (not queue) then return nil end
 
-    local queueCount = #queue
-    if (queueCount == 0) then return nil end
-    if (queueCount == 1) then return 1 end
+    local queueLen = Z.table.count(queue)
+    if (queueLen == 0) then return nil end
 
-    -- If value is a number, find the highest value and use that
-    if (type(queue[1].value) == "number") then
-        local highestVal = 1 -- idx
-        for i = 2, #queue do
-            if (queue[i].value > queue[highestVal].value) then
-                highestVal = i
+    local firstKey = Z.table.getFirstDictionaryKey(queue)
+    if (queueLen == 1) then return firstKey end
+
+    -- Get the compare function for this effect type
+    local compareFunc = funcs[queueKey].compare
+    if (not compareFunc) then
+        Z.debug(("Warning: No compare function for '%s', using first value"):format(queueKey))
+        return firstKey
+    end
+
+    -- Track dominant index and threshold
+    local dominantKey = firstKey
+    local dominantThresholdIdx = extractThresholdFromQueueId(dominantKey) or 1
+
+    for queueId, queueData in pairs(queue) do
+        local currThresholdIdx = extractThresholdFromQueueId(queueId) or 1
+
+        -- Compare using registered function
+        local result = compareFunc(
+            queueData.value,          -- val1 (current)
+            queue[dominantKey].value, -- val2 (dominant)
+            currThresholdIdx,         -- thresholdIdx1
+            dominantThresholdIdx      -- thresholdIdx2
+        )
+
+        if (result == -1) then
+            -- val1 (current) wins
+            dominantKey = queueId
+            dominantThresholdIdx = currThresholdIdx
+        elseif (result == 0) then
+            -- Equal - use threshold as tiebreaker
+            if (currThresholdIdx > dominantThresholdIdx) then
+                dominantKey = queueId
+                dominantThresholdIdx = currThresholdIdx
             end
         end
-
-        return highestVal
+        -- result == 1 means val2 (dominant) wins, no change needed
     end
 
-    local queueIdx, effectIdx = 1, getHierarchyIndex(queueKey, queue[1].value)
-    for i = 2, #queue do
-        local newIdx = getHierarchyIndex(queueKey, queue[i].value)
-
-        if (newIdx < effectIdx) then
-            queueIdx = i
-            effectIdx = newIdx
-        end
-    end
-
-    return queueIdx
+    return dominantKey
 end
 
 -- We use events to catch queue updated and then run a thread
@@ -289,9 +319,10 @@ RegisterNetEvent("zyke_status:OnQueueUpdated", function()
 
     queueActive = true
     while (queueActive) do
-        local sleep = 1000
+        local sleep = 250
+        local effectMultiplier = sleep / 1000
 
-        ---@type table<QueueKey, string | number | integer> 
+        ---@type table<QueueKey, {queueId: string, value: RichEffectValue}>
         newEffects = {}
 
         -- This is to manage direct effects:
@@ -307,39 +338,39 @@ RegisterNetEvent("zyke_status:OnQueueUpdated", function()
 
         hasActivatedEffects = true
         for queueKey, queueData in pairs(queues) do
-            if (#queueData == 0) then goto continue end
+            if (not Z.table.doesTableHaveEntries(queueData)) then goto continue end
 
-            local val = getDominantValue(queueKey)
+            local dominantQueueId = getDominantValueQueueId(queueKey)
 
-            if (val) then
+            if (dominantQueueId) then
                 if (
                     -- onStart should only trigger if the previous effect was nil (and we got a new value, which we already checked)
                     -- All other changes should go under onTick
                     prevEffects[queueKey] == nil
                 ) then
                     if (funcs[queueKey].onStart) then
-                        funcs[queueKey].onStart(queueData[val].value)
+                        funcs[queueKey].onStart(queueData[dominantQueueId].value, dominantQueueId, effectMultiplier)
                     end
                 end
 
                 if (funcs[queueKey].onTick) then
-                    funcs[queueKey].onTick(queueData[val].value)
+                    funcs[queueKey].onTick(queueData[dominantQueueId].value, dominantQueueId, effectMultiplier)
                 end
 
-                newEffects[queueKey] = queues[queueKey][val].value
+                newEffects[queueKey] = {queueId = dominantQueueId, value = queueData[dominantQueueId].value}
             end
 
             ::continue::
         end
 
-        for queueKey in pairs(prevEffects) do
+        for queueKey, prevQueueData in pairs(prevEffects) do
             if (not newEffects[queueKey]) then
                 if (funcs[queueKey].reset) then funcs[queueKey].reset() end
             end
 
-            if (prevEffects[queueKey] ~= newEffects[queueKey]) then
+            if (not richValuesEqual(prevEffects[queueKey], newEffects[queueKey])) then
                 if (funcs[queueKey].onStop) then
-                    funcs[queueKey].onStop(prevEffects[queueKey])
+                    funcs[queueKey].onStop(prevQueueData.value, prevQueueData.queueId, effectMultiplier)
                 end
             end
         end

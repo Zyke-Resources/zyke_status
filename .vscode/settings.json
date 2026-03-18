@@ -1,3 +1,10 @@
 {
-    "Lua.diagnostics.globals": ["Z", "Framework", "MySQL", "ResName", "T"]
+    "Lua.diagnostics.globals": [
+        "Z",
+        "Framework",
+        "MySQL",
+        "ResName",
+        "T",
+        "Translations"
+    ]
 }

@@ -1,7 +1,7 @@
 Config = Config or {}
 
 Config.Settings = {
-    debug = true,
+    debug = false,
     decimalAccuracy = 6,
     backwardsCompatibility = {
         -- Offers backwards compatibility with ESX & QBCore, however, it does create unsecure events (Not by us, we simply mimick what they do)

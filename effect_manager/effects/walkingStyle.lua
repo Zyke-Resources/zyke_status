@@ -1,3 +1,6 @@
+---@class WalkingStyleValue
+---@field value string
+
 -- A list of movement styles we won't override
 -- For example, crouching counts as a movement style which we don't want to override
 -- Don't forget to hash it
@@ -36,8 +39,31 @@ local function clearWalkingStyle()
 end
 
 RegisterQueueKey("walkingStyle", {
+    ---@param val WalkingStyleValue | string
+    ---@return WalkingStyleValue
+    normalize = function(val)
+        local _type = type(val)
+
+        if (_type == "string") then
+            return {value = val}
+        elseif (_type == "table") then
+            return {value = val.value}
+            ---@diagnostic disable-next-line: missing-return @ table or string, always returns something
+        end
+    end,
+    ---@param thresholdIdx1 integer
+    ---@param thresholdIdx2 integer
+    ---@return integer
+    compare = function(_, _, thresholdIdx1, thresholdIdx2)
+        -- Different walking styles, use threshold
+        -- Higher threshold = more severe impairment
+        if (thresholdIdx1 > thresholdIdx2) then return -1
+        elseif (thresholdIdx1 < thresholdIdx2) then return 1
+        else return 0 end
+    end,
+    ---@param val WalkingStyleValue
     onTick = function(val)
-        ensureWalkingStyle(val)
+        ensureWalkingStyle(val.value)
     end,
     onResourceStop = function()
         clearWalkingStyle()
