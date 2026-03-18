@@ -130,6 +130,7 @@ RegisterQueueKey("screenEffect", {
         ensureScreenEffect(val)
     end,
     onResourceStop = function()
+        ClearTimecycleModifier()
         clearScreenEffect()
     end,
     reset = function()
