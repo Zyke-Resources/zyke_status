@@ -4,6 +4,26 @@ function GetAllRawStatuses(plyId)
     return Cache.statuses[plyId] or {}
 end
 
+exports("GetAllRawStatuses", GetAllRawStatuses)
+
+-- Second return is if initialized
+---@param plyId PlayerId
+---@param statusNames StatusNames
+---@return {value: number} | PlayerStatus | AddictionStatus, boolean
+function GetRawStatus(plyId, statusNames)
+    local primary, secondary = statusNames[1], statusNames[2] or statusNames[1]
+    local statuses = Cache.statuses[plyId]
+
+    if (not statuses) then return {value = 0.0}, false end
+    if (not statuses[primary]) then return {value = 0.0}, false end
+    if (not statuses[primary].values) then return {value = 0.0}, false end
+    if (not statuses[primary].values[secondary]) then return {value = 0.0}, false end
+
+    return statuses[primary].values[secondary], true
+end
+
+exports("GetRawStatus", GetRawStatus)
+
 -- Cache when you last had an update, so that we can attempt to keep the data up to date smoother
 -- Utilizing a 25ms threshold we can catch everything that wants to update and perform it instantly
 -- All requests within a second of the first update will be queued and executed once the timeout is done
