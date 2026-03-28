@@ -12,7 +12,7 @@ local currShakeType = nil
 local currShakeIntensity = nil
 
 RegisterQueueKey("cameraShaking", {
-    ---@param val CameraShakingValue | string
+    ---@param val CameraShakingValue | string | boolean
     ---@return CameraShakingValue
     normalize = function(val)
         local _type = type(val)
@@ -25,6 +25,8 @@ RegisterQueueKey("cameraShaking", {
                 value = val.value or defaultShakeType,
                 intensity = val.intensity or 1.0
             }
+        elseif (_type == "boolean") then
+            return {value = val and defaultShakeType or nil, intensity = 1.0}
             ---@diagnostic disable-next-line: missing-return @ table or string, always returns something
         end
     end,
