@@ -22,8 +22,11 @@ RegisterQueueKey("stumble", {
             return {value = val}
         elseif (_type == "table") then
             return {value = val.value or 0.0}
-            ---@diagnostic disable-next-line: missing-return @ table or number, always returns something
+        elseif (_type == "boolean") then
+            return {value = val and 1.0 or 0.0}
         end
+
+        return {value = 0.0} -- linter
     end,
     ---@param val1 StumbleValue
     ---@param val2 StumbleValue
