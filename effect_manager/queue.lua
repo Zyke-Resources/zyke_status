@@ -161,9 +161,10 @@ function AddToQueue(queueKey, queueId, thresholdIdx, value, newThresholdToActiva
     if (not value) then
         -- If we don't provide a value, that means we are using a static effect registered
         if (thresholdIdx) then
-            local primary, secondary = SeparateStatusName(queueId)
+            local statusName = queueId:match("^(.+);%d+$") or queueId
+            local primary, secondary = SeparateStatusName(statusName)
             local statusSettings = GetStatusSettings(primary, secondary)
-            if (not statusSettings) then return end
+            if (not statusSettings or not statusSettings.effect[thresholdIdx]) then return end
 
             value = statusSettings.effect[thresholdIdx][queueKey]
         else
