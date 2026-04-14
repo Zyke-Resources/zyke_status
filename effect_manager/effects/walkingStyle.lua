@@ -31,8 +31,7 @@ local function clearWalkingStyle()
     local currWalkingStyle = GetPedMovementClipset(ply)
     if (ignoreOverriding[currWalkingStyle]) then return end
 
-    local isMale = IsPedMale(ply)
-    local walkStyle = isMale and "move_m@multiplayer" or "move_f@multiplayer"
+    local walkStyle = Z.getGender() == "male" and "move_m@multiplayer" or "move_f@multiplayer"
 
     Z.debug("Clearing walking style.")
     SetPedMovementClipset(ply, walkStyle, 1.0)
