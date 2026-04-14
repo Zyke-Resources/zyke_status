@@ -8,10 +8,17 @@
 -- For example, wasabi_ambulance already handled the txmadin events
 -- Because of our compatibility approach, we will just let wasabi handle this, and catch Wasabi events
 EXTERNAL_RESOURCES = {
-    ["wasabi_ambulance"] = false
+    ["wasabi_ambulance"] = false,
+    ["wasabi_ambulance_v2"] = false
 }
 
-for name in pairs(EXTERNAL_RESOURCES) do
+local detectionOrder = {
+    "wasabi_ambulance_v2",
+    "wasabi_ambulance"
+}
+
+for i = 1, #detectionOrder do
+    local name = detectionOrder[i]
     local resState = GetResourceState(name)
 
     if (resState == "started" or resState == "starting") then
