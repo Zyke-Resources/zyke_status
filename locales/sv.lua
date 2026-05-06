@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Spelarens status har frysts.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Spelarens status har tinats.", type = "success"},
     ["noServerFreeze"] = {msg = "Du kan inte frysa servern.", type = "error"},
+    ["statusesReset"] = {msg = "Alla spelarens statusvärden har återställts.", type = "success"},
 
     ["stress1"] = {msg = "Du känner dig lite stressad.", type = "info"},
     ["stress2"] = {msg = "Du känner dig ganska stressad.", type = "error"},

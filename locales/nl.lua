@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Spelerstatus is bevroren.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Spelerstatus is ontdooid.", type = "success"},
     ["noServerFreeze"] = {msg = "Je kunt de server niet bevriezen.", type = "error"},
+    ["statusesReset"] = {msg = "Alle statussen van de speler zijn gereset.", type = "success"},
 
     ["stress1"] = {msg = "Je voelt je een beetje gestrest.", type = "info"},
     ["stress2"] = {msg = "Je voelt je behoorlijk gestrest.", type = "error"},

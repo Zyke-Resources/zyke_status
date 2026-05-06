@@ -49,6 +49,31 @@ end, "Add/Remove from player status", {
 
 Z.registerCommand({"status_clear", "sclear", "status_reset", "sreset"}, function(plyId, args)
     local isInvokerServer = plyId == 0
+    local defaultTarget = plyId
+	local targetId = nil
+
+	local targetArg = args[1]
+
+	-- If we don't provide anything, or we provide aliases, target self
+	if (
+		not targetArg or
+		#targetArg == 0 or
+		targetArg == "me" or
+		targetArg == "self"
+	) then
+		targetId = defaultTarget
+	end
+
+    targetId = math.tointeger(targetId or targetArg)
+	if (targetId == nil) then
+		if (isInvokerServer) then
+            print("Invalid target id.")
+        else
+            Z.notify(plyId, "invalidTargetId")
+        end
+
+        return
+	end
 
     if (not isAllowed(plyId)) then
         if (isInvokerServer) then
@@ -60,7 +85,7 @@ Z.registerCommand({"status_clear", "sclear", "status_reset", "sreset"}, function
         return
     end
 
-    ResetStatuses(plyId)
+    ResetStatuses(targetId)
 
     if (isInvokerServer) then
         print("Player statuses have been reset.")

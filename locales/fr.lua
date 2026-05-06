@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Le statut du joueur a été gelé.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Le statut du joueur a été dégelé.", type = "success"},
     ["noServerFreeze"] = {msg = "Vous ne pouvez pas geler le serveur.", type = "error"},
+    ["statusesReset"] = {msg = "Tous les statuts du joueur ont été réinitialisés.", type = "success"},
 
     ["stress1"] = {msg = "Vous vous sentez un peu stressé.", type = "info"},
     ["stress2"] = {msg = "Vous vous sentez assez stressé.", type = "error"},

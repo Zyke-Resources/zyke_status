@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Oyuncunun durumu donduruldu.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Oyuncunun durumu çözüldü.", type = "success"},
     ["noServerFreeze"] = {msg = "Sunucuyu donduramazsınız.", type = "error"},
+    ["statusesReset"] = {msg = "Oyuncunun tüm durumları sıfırlandı.", type = "success"},
 
     ["stress1"] = {msg = "Biraz stresli hissediyorsunuz.", type = "info"},
     ["stress2"] = {msg = "Oldukça stresli hissediyorsunuz.", type = "error"},

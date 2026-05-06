@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "تم تجميد حالة اللاعب.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "تم إلغاء تجميد حالة اللاعب.", type = "success"},
     ["noServerFreeze"] = {msg = "لا يمكنك تجميد الخادم.", type = "error"},
+    ["statusesReset"] = {msg = "تمت إعادة تعيين جميع حالات اللاعب.", type = "success"},
 
     ["stress1"] = {msg = "تشعر ببعض التوتر.", type = "info"},
     ["stress2"] = {msg = "تشعر بتوتر ملحوظ.", type = "error"},

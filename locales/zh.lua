@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "玩家状态已冻结。", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "玩家状态已解冻。", type = "success"},
     ["noServerFreeze"] = {msg = "你无法冻结服务器。", type = "error"},
+    ["statusesReset"] = {msg = "玩家的所有状态已重置。", type = "success"},
 
     ["stress1"] = {msg = "你感到有些紧张。", type = "info"},
     ["stress2"] = {msg = "你感到相当紧张。", type = "error"},

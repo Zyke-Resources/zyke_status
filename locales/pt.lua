@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "O estado do jogador foi congelado.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "O estado do jogador foi descongelado.", type = "success"},
     ["noServerFreeze"] = {msg = "Não podes congelar o servidor.", type = "error"},
+    ["statusesReset"] = {msg = "Todos os estados do jogador foram repostos.", type = "success"},
 
     ["stress1"] = {msg = "Sentes-te um pouco stressado.", type = "info"},
     ["stress2"] = {msg = "Sentes-te bastante stressado.", type = "error"},

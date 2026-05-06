@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Player's status has been frozen.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Player's status has been unfrozen.", type = "success"},
     ["noServerFreeze"] = {msg = "You can not freeze the server.", type = "error"},
+    ["statusesReset"] = {msg = "All statuses for the player have been reset.", type = "success"},
 
     ["stress1"] = {msg = "You are feeling a bit stressed.", type = "info"},
     ["stress2"] = {msg = "You are feeling quite stressed.", type = "error"},

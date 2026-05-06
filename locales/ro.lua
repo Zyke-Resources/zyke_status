@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Statusul jucătorului a fost înghețat.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Statusul jucătorului a fost dezghețat.", type = "success"},
     ["noServerFreeze"] = {msg = "Nu poți îngheța serverul.", type = "error"},
+    ["statusesReset"] = {msg = "Toate statusurile jucătorului au fost resetate.", type = "success"},
 
     ["stress1"] = {msg = "Te simți puțin stresat.", type = "info"},
     ["stress2"] = {msg = "Te simți destul de stresat.", type = "error"},

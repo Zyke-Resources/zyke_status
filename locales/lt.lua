@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Žaidėjo būsena užšaldyta.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Žaidėjo būsena atšaldyta.", type = "success"},
     ["noServerFreeze"] = {msg = "Negalite užšaldyti serverio.", type = "error"},
+    ["statusesReset"] = {msg = "Visos žaidėjo būsenos nustatytos iš naujo.", type = "success"},
 
     ["stress1"] = {msg = "Jaučiate lengvą stresą.", type = "info"},
     ["stress2"] = {msg = "Jaučiate vidutinį stresą.", type = "error"},

@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Status gracza został zamrożony.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Status gracza został odmrożony.", type = "success"},
     ["noServerFreeze"] = {msg = "Nie możesz zamrozić serwera.", type = "error"},
+    ["statusesReset"] = {msg = "Wszystkie statusy gracza zostały zresetowane.", type = "success"},
 
     ["stress1"] = {msg = "Czujesz się trochę zestresowany.", type = "info"},
     ["stress2"] = {msg = "Czujesz się dość zestresowany.", type = "error"},

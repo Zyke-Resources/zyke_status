@@ -8,6 +8,7 @@ return {
     ["playerStatusFrozen"] = {msg = "Stav hráče byl zmrazen.", type = "success"},
     ["playerStatusUnfrozen"] = {msg = "Stav hráče byl rozmrazen.", type = "success"},
     ["noServerFreeze"] = {msg = "Server nelze zmrazit.", type = "error"},
+    ["statusesReset"] = {msg = "Všechny stavy hráče byly resetovány.", type = "success"},
 
     ["stress1"] = {msg = "Cítíte se trochu ve stresu.", type = "info"},
     ["stress2"] = {msg = "Cítíte se dost ve stresu.", type = "error"},
