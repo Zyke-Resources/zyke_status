@@ -45,6 +45,15 @@ function GetStatusSettings(primary, secondary)
     return baseEffect[secondary] or baseEffect.base
 end
 
+---@param name string
+---@return boolean
+function IsEffectEnabled(name)
+    local settings = Config.Settings.effects
+    if (settings == nil) then return true end
+
+    return settings[name] ~= false
+end
+
 -- These statuses have reversed values, 100.0 being the starting point
 local reversed = {
     ["addiction"] = true,

@@ -30,6 +30,8 @@ function RegisterEffectFunctions(name)
             -- So for the thresholdIdxs, simply send in what thresholdIdx to run, and it will add all of them to the queue
             local keys = GetExistingQueueKeys()
             for i = 1, #keys do
+                if (not IsEffectEnabled(keys[i])) then goto continue end
+
                 local effectValue = statusSettings.effect[thresholdIdx][keys[i]]
                 if (effectValue) then
                     -- For reactions: avoid spamming if you surpass multiple thresholds at once
@@ -43,13 +45,15 @@ function RegisterEffectFunctions(name)
                         AddToQueue(keys[i], getQueueId(thresholdIdx), thresholdIdx)
                     end
                 end
+
+                ::continue::
             end
 
             -- Notifications
             -- These are not reliant on the queue system & will play once a threshold has been reached
 
             local notif = statusSettings.effect[thresholdIdx].notification
-            if (notif) then
+            if (notif and IsEffectEnabled("notification")) then
                 -- Avoid a spam of notifications if you surpass multiple trehsholds at once
                 -- This ensures only the highest threshold notification is played
                 -- You can use the `force` option to force the notification to play regardless of the last threshold hit
@@ -72,7 +76,7 @@ function RegisterEffectFunctions(name)
         onTick = function(val, thresholdIdx, _, highestThresholdIdx, effectMultiplier)
             -- print("onTick", name, thresholdIdx, highestThresholdIdx)
 
-            if (statusSettings.effect[thresholdIdx].damage) then
+            if (statusSettings.effect[thresholdIdx].damage and IsEffectEnabled("damage")) then
                 local amount = statusSettings.effect[thresholdIdx].damage * effectMultiplier
                 AddToStat("health", -amount)
             end

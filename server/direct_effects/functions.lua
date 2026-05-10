@@ -30,11 +30,15 @@ function GetDirectEffectsForClient(plyId)
 	local totalDuration = 0
 
 	for key, value in pairs(plyEffects) do
+		if (not IsEffectEnabled(key)) then goto continue end
+
 		formattedEffects[key] = value[1].value
 
 		for i = 1, #value do
 			totalDuration += value[i].duration
 		end
+
+		::continue::
 	end
 
 	return formattedEffects, totalDuration
@@ -62,6 +66,8 @@ function AddDirectEffect(plyId, effects, activationThreshold)
 
 	-- We also sort the effects properly
 	for i = 1, #effects do
+		if (not IsEffectEnabled(effects[i].name)) then goto continue end
+
 		-- If the effect is completely empty, we can just add it
 		if (not plyEffects[effects[i].name]) then
 			plyEffects[effects[i].name] = {}
@@ -146,6 +152,8 @@ function AddDirectEffect(plyId, effects, activationThreshold)
 				end
 			end
 		end
+
+		::continue::
 	end
 
 	syncDirectEffectsToClient(plyId, nil, activationThreshold)

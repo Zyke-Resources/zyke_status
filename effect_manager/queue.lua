@@ -129,6 +129,8 @@ function AddToQueue(queueKey, queueId, thresholdIdx, value, newThresholdToActiva
         }, {indent = true}))
     end
 
+    if (not IsEffectEnabled(queueKey)) then return false end
+
     if (queues[queueKey] and queues[queueKey][queueId]) then
         error(("Queue already exists for queueKey: '%s' and queueId: '%s'"):format(queueKey, queueId))
         return false
@@ -229,6 +231,12 @@ end
 ---@param queueId string
 ---@param value EffectValueInput
 function UpdateQueueValue(queueKey, queueId, value)
+    if (not IsEffectEnabled(queueKey)) then
+        RemoveFromQueue(queueKey, queueId)
+
+        return false
+    end
+
     local queue = queues[queueKey]
     if (not queue or not queue[queueId]) then
         Z.debug("Cannot update queue value, entry does not exist for:", queueKey, queueId)

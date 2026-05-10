@@ -77,6 +77,23 @@ Config.Settings = {
     directEffects = {
         accuracyMerge = 0.1, -- If your new value is within 0.1 (inclusive) of the value you are checking it again, merge them to avoid large sets of iteraitons, only relevant for number values
     },
+    -- Toggle individual status effects without editing each status config
+    -- Set to false to disable it
+    -- For example, setting damage to false will completely stop every effect from damaging you, no matter what
+    effects = {
+        blockJumping = true,
+        blockSprinting = true,
+        blurryVision = true,
+        cameraShaking = true,
+        damage = true,
+        movementSpeed = true,
+        notification = true,
+        reaction = true,
+        screenEffect = true,
+        strength = true,
+        stumble = true,
+        walkingStyle = true,
+    },
     commands = {
         heal = {
             command = {"heal", "healing"}, -- The command name, if you want to use a different name, you can change it here, or add in more after it
