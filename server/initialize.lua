@@ -45,6 +45,17 @@ local function initializePlayer(plyId)
     EnsureDirectEffectsFromDatabase(plyId)
 
     SyncPlayerStatus(plyId, GetAllPrimaryStatuses())
+
+    -- Naive init that runs after a while, to avoid timing issues
+    -- This is for huds / systems that don't grab player data to initialize, and simply rely on events
+    -- If we initialize at the same time, they may miss that window
+    CreateThread(function()
+        Wait(1500)
+        if (not Cache.statuses[plyId]) then return end
+
+        SyncPlayerStatus(plyId, GetAllPrimaryStatuses())
+    end)
+
     EnsurePlayerSubStatusesCache(plyId)
 end
 
