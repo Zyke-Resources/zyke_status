@@ -44,10 +44,18 @@ local esxSetMethodUpdateInterval = {}
 ---@type table<PlayerId, OsTime>
 local qbSetMethodUpdateInterval = {}
 
+---@type table<PlayerId, OsTime>
+local stressStateBagLastUpdated = {}
+
+---@type table<PlayerId, boolean>
+local stressStateBagPending = {}
+
 ---@param plyId PlayerId
 RegisterNetEvent("zyke_lib:OnCharacterLogout", function(plyId)
     esxSetMethodUpdateInterval[plyId] = nil
     qbSetMethodUpdateInterval[plyId] = nil
+    stressStateBagLastUpdated[plyId] = nil
+    stressStateBagPending[plyId] = nil
     clientSyncQueue[plyId] = nil
     clientLastUpdated[plyId] = nil
 end)
@@ -142,6 +150,26 @@ function SyncPlayerStatus(plyId, primary)
 
         if (backwardsCompatibility.enabled == true) then
             local compatStatus = CompatibilityFuncs.CreateBasePlayerStatus(plyId)
+            if (statuses.stress ~= nil) then
+                local now = os.time()
+                local remainingThrottle = 1 - (now - (stressStateBagLastUpdated[plyId] or 0))
+                if (remainingThrottle <= 0) then
+                    stressStateBagLastUpdated[plyId] = now
+                    Player(plyId).state:set("stress", GetStatus(plyId, {"stress"}), true)
+                elseif (not stressStateBagPending[plyId]) then
+                    stressStateBagPending[plyId] = true
+
+                    CreateThread(function()
+                        Wait(remainingThrottle * 1000)
+                        stressStateBagPending[plyId] = nil
+                        if (not Cache.statuses[plyId]) then return end
+
+                        stressStateBagLastUpdated[plyId] = os.time()
+                        Player(plyId).state:set("stress", GetStatus(plyId, {"stress"}), true)
+                    end)
+                end
+            end
+
             if (framework == "ESX") then
                 -- Updated every minute by default in ESX
                 if (os.time() - (esxSetMethodUpdateInterval[plyId] or 0) >= playerInstanceUpdateInterval) then
