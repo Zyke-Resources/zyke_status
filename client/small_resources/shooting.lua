@@ -1,18 +1,14 @@
 local config = Config.Settings.smallResources.shooting
 if (not config.enabled) then return end
 
+---@param shots integer @ Number of shots in the current batch
 local function processBatch(shots)
-	-- You can do calculations in here, such as checking for job like police and reducing the gain
-	-- We process these every 2000ms in batches, so you can do fairly pricey calculations here
-
-	-- Job checking example, removing 75% of the stress gain for police
-	local ply = Z.getJob()
-	if (ply.name == "police") then
-		shots = shots * 0.25
-	end
+	local job = Z.getJob()
+	local jobMultiplier = job and config.jobMultipliers[job.name] or 1.0
+	if (jobMultiplier <= 0.0) then return end
 
 	local rand = math.random(math.floor(config.gainAmount.min * 10), math.floor(config.gainAmount.max * 10)) / 10
-	TriggerServerEvent("hud:server:GainStress", shots * rand)
+	TriggerServerEvent("hud:server:GainStress", shots * rand * jobMultiplier)
 end
 
 -- Probably don't change these unless you know what you're doing

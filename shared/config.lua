@@ -58,10 +58,14 @@ Config.Settings = {
         baseInterval = 30, -- seconds, how often we update the players, recommendation is to keep at 30
         databaseSave = 180, -- seconds, recommendation is to keep at 180
     },
+    -- Unlisted jobs use 1.0. Set 0.0 to disable stress gain or 0.5 to halve it
     smallResources = {
         ["driving"] = {
             enabled = false,
             minSpeed = 100.0, -- Minimum average speed to trigger, in km/h
+            jobMultipliers = {
+                -- ["police"] = 0.5,
+            },
             gainAmount = {min = 0.1, max = 0.5} -- Every 10s, 1 decimal max
         },
         ["shooting"] = {
@@ -71,6 +75,9 @@ Config.Settings = {
             -- You can change these values in client/small_resources/shooting.lua
 
             enabled = true,
+            jobMultipliers = {
+                ["police"] = 0.25, -- Preserves the existing 75% stress reduction
+            },
             gainAmount = {min = 0.1, max = 0.5} -- Shot * gainAmount
         }
     },

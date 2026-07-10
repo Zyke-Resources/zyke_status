@@ -4,6 +4,9 @@ local config = Config.Settings.smallResources.driving
 if (not config.enabled) then return end
 
 ---@diagnostic disable-next-line: param-type-mismatch
+---@param bagName string @ State bag name
+---@param key string @ Changed state key
+---@param value integer | nil @ Current vehicle entity
 AddStateBagChangeHandler("currentVehicle", nil, function(bagName, key, value)
 	if (not value) then return end
 
@@ -27,9 +30,13 @@ AddStateBagChangeHandler("currentVehicle", nil, function(bagName, key, value)
 
 		local avgSpeed = totalSpeed / intervals
 		if (avgSpeed > config.minSpeed) then
-			local val = math.random(math.floor(config.gainAmount.min * 10), math.floor(config.gainAmount.max * 10)) / 10
+			local job = Z.getJob()
+			local jobMultiplier = job and config.jobMultipliers[job.name] or 1.0
+			if (jobMultiplier > 0.0) then
+				local val = math.random(math.floor(config.gainAmount.min * 10), math.floor(config.gainAmount.max * 10)) / 10
 
-			TriggerServerEvent('hud:server:GainStress', val)
+				TriggerServerEvent("hud:server:GainStress", val * jobMultiplier)
+			end
 		end
 	end
 end)
