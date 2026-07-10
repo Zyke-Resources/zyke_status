@@ -69,11 +69,13 @@ Config.Settings = {
             gainAmount = {min = 0.1, max = 0.5} -- Every 10s, 1 decimal max
         },
         ["shooting"] = {
-            -- If you want to change this gain for any reaosn, you can modify client/small_resources/shooting.lua
+            -- If you want to change this gain for any reason, you can modify client/small_resources/shooting.lua
             -- We process the stress in 2000ms batches to preserve performance
             -- We process shots in 400ms intervals, meaning repeated shots like an assault rifle will not trigger stress massively faster than a pistol, just slightly
             -- You can change these values in client/small_resources/shooting.lua
 
+            -- NOTE that if you want to use this, you must have the event gated behind "stressEvents.gainStress" enabled
+            -- We disable it by default for reasons explained above, if you are not getting stressed as you expect, enable the stress event and it will work
             enabled = true,
             jobMultipliers = {
                 ["police"] = 0.25, -- Preserves the existing 75% stress reduction
