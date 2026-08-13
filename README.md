@@ -14,7 +14,7 @@ We have a first iteration of an installation guide available in our documentatio
 
 ## Links
 
--   [Discord](https://discord.gg/zykeresources)
+-   [Discord](https://discord.zykeresources.com)
 -   [Documentation](https://docs.zykeresources.com/free-resources/status)
 -   [Store](https://zykeresources.com)
 
