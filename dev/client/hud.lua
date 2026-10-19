@@ -1,49 +1,40 @@
 local hudState = GetResourceKvpInt("zyke_status:dev_hud_enabled") or 0
 
-local Drawing = {}
-Drawing.__index = Drawing
+local drawingMethods = {}
+drawingMethods.__index = drawingMethods
 
-local currDrawing = nil
-
-function Drawing:new()
-    local self = setmetatable({}, Drawing)
+function drawingMethods:new()
+    local self = setmetatable({}, drawingMethods)
 
     self.queue = {}
     self.offset = 0.025
-    self.frozenStatus = false
 
     return self
 end
 
 ---@param text string
-function Drawing:addToQueue(text)
+function drawingMethods:addToQueue(text)
     self.queue[#self.queue+1] = text
 end
 
-function Drawing:draw()
+function drawingMethods:draw()
     for i = 1, #self.queue do
         Z.drawText(self.queue[i], 0.5, 0.01 + self.offset * (i - 1))
     end
 end
 
-function Drawing:reset()
+function drawingMethods:reset()
     self.queue = {}
-end
-
----@param status boolean
-function Drawing:setFrozenStatus(status)
-    self.frozenStatus = status
 end
 
 local function devHud()
     CreateThread(function()
-        local drawing = Drawing:new()
-        currDrawing = drawing
+        local drawing = drawingMethods:new()
 
         while (hudState == 1) do
             local sleep = Cache.statuses and 1 or 3000
 
-            if (drawing.frozenStatus == true) then
+            if (Cache.statusFrozen == true) then
                 drawing:addToQueue("STATUSES FROZEN")
             end
 
@@ -83,17 +74,5 @@ RegisterCommand("status:dev_hud", function()
 
     devHud()
 end, false)
-
-RegisterNetEvent("zyke_status:OnPlayerStatusFrozen", function()
-    if (not currDrawing) then return end
-
-    currDrawing:setFrozenStatus(true)
-end)
-
-RegisterNetEvent("zyke_status:OnPlayerStatusUnfrozen", function()
-    if (not currDrawing) then return end
-
-    currDrawing:setFrozenStatus(false)
-end)
 
 devHud()

@@ -46,7 +46,7 @@ if (#cmdArray > 0) then
 		end
 
 		-- Check if player is already frozen, toggle accordingly
-		local isFrozen = IsPlayerFrozen(targetId)
+		local isFrozen = RestorePlayerFreezeStatus(targetId)
 
 		if (isFrozen) then
 			UnfreezeStatus(targetId)

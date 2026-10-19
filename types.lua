@@ -37,6 +37,7 @@
 ---@field statuses table<StatusName, PlayerStatuses> | nil @nil when unloaded
 ---@field directEffects table<QueueKey, EffectValueInput> | nil @nil when unloaded
 ---@field directEffectsTotalDuration number | nil @nil when unloaded
+---@field statusFrozen boolean
 
 ---@alias PlayerId integer
 ---@alias Character table

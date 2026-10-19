@@ -253,8 +253,14 @@ end)
 AddEventHandler("zyke_lib:OnCharacterLogout", function()
     Z.debug("[Effects] Character logout, stopping effect loop.")
     loopId = nil
+    lastProcessedStatuses = nil
+    prevEffects = {}
+    prevThresholdIdxs = {}
 end)
 
 AddEventHandler("zyke_status:OnPlayerStatusFrozen", function()
     loopId = nil
+    lastProcessedStatuses = nil
+    prevEffects = {}
+    prevThresholdIdxs = {}
 end)

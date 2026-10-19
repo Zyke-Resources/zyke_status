@@ -13,7 +13,9 @@ local function syncStatus(statuses)
         end
     end
 
-    TriggerEvent("zyke_status:OnStatusFetched")
+    if (not Cache.statusFrozen) then
+        TriggerEvent("zyke_status:OnStatusFetched")
+    end
 end
 
 -- Wonder why we do this? It's explained in the `SyncPlayerStatus` server function
@@ -45,9 +47,14 @@ RegisterNetEvent("zyke_lib:OnCharacterLogout", function()
     ClearEffectQueue()
 
     Cache.statuses = nil
+    Cache.directEffects = nil
+    Cache.directEffectsTotalDuration = nil
+    Cache.statusFrozen = true
 end)
 
+RegisterNetEvent("zyke_status:OnPlayerStatusFrozen")
 AddEventHandler("zyke_status:OnPlayerStatusFrozen", function()
+    Cache.statusFrozen = true
     Z.debug("[StatusFrozen] Clearing effect queue.")
     ClearEffectQueue()
 end)
@@ -69,6 +76,7 @@ RegisterNetEvent("zyke_status:OnDirectEffectsUpdated", function(currEffects, rem
 
     Cache.directEffects = currEffects
     Cache.directEffectsTotalDuration = totalDuration
+    if (Cache.statusFrozen) then return end
 
     for i = 1, #removedEffects do
         RemoveFromQueue(removedEffects[i], keyPrefix .. removedEffects[i])

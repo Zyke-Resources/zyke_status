@@ -40,6 +40,7 @@ end
 local function initializePlayer(plyId)
     Z.debug("Attempting to initialize", plyId)
 
+    RestorePlayerFreezeStatus(plyId)
     ensureBaseStatusValues(plyId)
     fetchStatusFromDatabase(plyId)
     EnsureDirectEffectsFromDatabase(plyId)

@@ -1,7 +1,9 @@
 ---@type ClientCache
 Cache = {
     statuses = nil,
-    directEffects = nil
+    directEffects = nil,
+    directEffectsTotalDuration = nil,
+    statusFrozen = true
 }
 
 -- List of functions for effects
@@ -10,10 +12,20 @@ EffectFunctions = {}
 
 local function init()
     Z.debug("[Init] Fetching player status and direct effects.")
-    Cache.statuses = Z.callback.await("zyke_status:GetPlayerStatus")
-    Cache.directEffects = Z.callback.await("zyke_status:GetPlayerDirectEffects")
-    TriggerEvent("zyke_status:OnDirectEffectsUpdated", Cache.directEffects, {})
 
+    Cache.statusFrozen = true
+    Cache.statuses = Z.callback.await("zyke_status:GetPlayerStatus")
+    Cache.directEffects, Cache.directEffectsTotalDuration = Z.callback.await("zyke_status:GetPlayerDirectEffects")
+    Cache.statusFrozen = Z.callback.await("zyke_status:IsPlayerFrozen")
+
+    if (Cache.statusFrozen) then
+        TriggerEvent("zyke_status:OnPlayerStatusFrozen")
+        Z.debug("[Init] Status fetched while frozen.")
+
+        return
+    end
+
+    TriggerEvent("zyke_status:OnDirectEffectsUpdated", Cache.directEffects, {}, Cache.directEffectsTotalDuration)
     Z.debug("[Init] Status fetched successfully.")
     TriggerEvent("zyke_status:OnStatusFetched")
 end
@@ -36,6 +48,7 @@ RegisterNetEvent("zyke_lib:OnLoaderFinished", function()
     init()
 end)
 
-AddEventHandler("zyke_status:OnPlayerStatusUnfrozen", function()
+RegisterNetEvent("zyke_status:OnPlayerStatusUnfrozen", function()
+    Cache.statusFrozen = false
     init()
 end)

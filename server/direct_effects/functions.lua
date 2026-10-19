@@ -174,6 +174,8 @@ CreateThread(function()
 		local directEffects = Cache.directEffects
 
 		for plyId in pairs(directEffects) do
+			if (IsPlayerFrozen(plyId)) then goto continuePlayer end
+
 			local queueKeysRemoved = {}
 			local plyEffects = Cache.directEffects[plyId]
 			local toRemove = waitInterval / 1000
@@ -205,6 +207,8 @@ CreateThread(function()
 			if (#queueKeysRemoved > 0) then
 				syncDirectEffectsToClient(plyId, queueKeysRemoved, "prev")
 			end
+
+			::continuePlayer::
 		end
 	end
 end)
