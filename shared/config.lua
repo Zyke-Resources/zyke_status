@@ -106,12 +106,12 @@ Config.Settings = {
     commands = {
         heal = {
             command = {"heal", "healing"}, -- The command name, if you want to use a different name, you can change it here, or add in more after it
-            permission = {"command"},
+            permission = {"command", "admin", "superadmin", "owner"},
             overwrite = false, -- By default, we only register the command if nothing else does, set to true if you want us to register it (it can still be overwritten by other resources starting after us)
         },
         freezeStatus = {
             command = {"status_freeze"}, -- The command name, if you want to use a different name, you can change it here, or add in more after it
-            permission = {"command"},
+            permission = {"command", "admin", "superadmin", "owner"},
             overwrite = false, -- By default, we only register the command if nothing else does, set to true if you want us to register it (it can still be overwritten by other resources starting after us)
         }
     }
