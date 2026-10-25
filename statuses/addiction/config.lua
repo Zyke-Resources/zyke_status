@@ -21,7 +21,7 @@ Config.Status.addiction = {
             threshold = 20.0,
         },
         value = {
-            drain = 5.01
+            drain = 0.01
         },
         effect = {
             {
