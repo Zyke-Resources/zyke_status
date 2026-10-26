@@ -1,10 +1,110 @@
--- Registers it as a status type, which will allow a status object for this type to be created
+---@param value number
+---@return number
+local function clampValue(value)
+    value = Z.numbers.round(value, Config.Settings.decimalAccuracy)
+
+    return math.max(0.0, math.min(100.0, value))
+end
+
+-- Default hooks for a status holding one `value` from 0 to 100, draining by its configured `value.drain`
+-- A status resting at 0 (drunk, high) is removed once emptied, one starting full (hunger) stays at 0
 ---@param name StatusName
----@param multi? boolean
----@param baseValues table @Values the state will be required to have
----@param functions {onTick: function?, onAdd: function, onRemove: function, onSet?: function, onReset: function, onSoftReset?: function}
-function RegisterStatusType(name, multi, baseValues, functions)
+---@param baseValues table
+---@return StatusFunctions
+local function createDefaultFunctions(name, baseValues)
+    local restsAtZero = (baseValues.value or 0.0) <= 0.0
+
+    ---@param plyId PlayerId
+    ---@param statusNames StatusNames
+    ---@return table<SecondaryName, PlayerStatus> | nil, SecondaryName
+    local function getValues(plyId, statusNames)
+        local data = GetPlayerBaseStatusTable(plyId, name)
+
+        return data and data.values, statusNames[2] or name
+    end
+
+    return {
+        onTick = function(players)
+            for i = 1, #players do
+                local plyId, statuses = players[i][1], players[i][2]
+
+                for j = 1, #statuses do
+                    local secondary, multiplier = statuses[j][1], statuses[j][2]
+                    local settings = GetStatusSettings(name, secondary)
+                    local amount = (settings?.value?.drain or 0) * multiplier
+
+                    if (amount > 0.0) then
+                        RemoveFromStatus(plyId, {name, secondary}, amount, true)
+                    end
+                end
+            end
+        end,
+        onAdd = function(plyId, statusNames, amount)
+            local values, secondary = getValues(plyId, statusNames)
+            if (not values) then return end
+
+            values[secondary].value = clampValue(values[secondary].value + amount)
+
+            return true
+        end,
+        onRemove = function(plyId, statusNames, amount)
+            local values, secondary = getValues(plyId, statusNames)
+            if (not values) then return end
+
+            local value = clampValue(values[secondary].value - amount)
+
+            if (value <= 0.0 and restsAtZero) then
+                values[secondary] = nil
+            else
+                values[secondary].value = value
+            end
+
+            return true
+        end,
+        onSet = function(plyId, statusNames, amount)
+            local values, secondary = getValues(plyId, statusNames)
+            if (not values) then return end
+
+            local value = clampValue(amount)
+            values[secondary].value = value
+
+            return true, value
+        end,
+        onReset = function(plyId, statusNames)
+            local values, secondary = getValues(plyId, statusNames)
+            if (not values) then return end
+
+            if (restsAtZero) then
+                values[secondary] = nil
+            else
+                values[secondary].value = baseValues.value
+            end
+
+            return true
+        end
+    }
+end
+
+-- Registers a status type from statuses/registry.lua, which will allow a status object for this type to be created
+-- Every hook falls back to the defaults above, pass a function to override one or false to disable onTick/onSet
+---@param name StatusName
+---@param functions? StatusFunctions
+function RegisterStatusType(name, functions)
+    local statusType = StatusTypes[name]
+    local multi = statusType.multi == true
+
     Z.debug("Registering: " .. name .. ", multi: " .. tostring(multi))
+
+    -- Values every entry of this status is required to have
+    local baseValues = {value = statusType.reversed and 100.0 or 0.0}
+    for key, value in pairs(statusType.values or {}) do
+        baseValues[key] = value
+    end
+
+    local hooks = createDefaultFunctions(name, baseValues)
+    for hookName, fn in pairs(functions or {}) do
+        hooks[hookName] = fn
+    end
 
     local subStatuses = {}
     for subName in pairs(Config.Status[name]) do
@@ -12,14 +112,14 @@ function RegisterStatusType(name, multi, baseValues, functions)
     end
 
     Cache.existingStatuses[name] = {
-        multi = multi and true or false,
+        multi = multi,
         baseValues = baseValues,
-        onTick = functions.onTick,
-        onAdd = functions.onAdd,
-        onRemove = functions.onRemove,
-        onSet = functions.onSet,
-        onReset = functions.onReset,
-        onSoftReset = functions.onSoftReset,
+        onTick = hooks.onTick or nil,
+        onAdd = hooks.onAdd,
+        onRemove = hooks.onRemove,
+        onSet = hooks.onSet or nil,
+        onReset = hooks.onReset,
+        onSoftReset = hooks.onSoftReset,
         subStatuses = subStatuses
     }
 

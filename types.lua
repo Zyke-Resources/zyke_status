@@ -21,6 +21,21 @@
 ---@field onSoftReset? function @Soft resets that are not complete, for example, addiciton resets satisfaction level but remains addiction
 ---@field subStatuses table<SecondaryName, boolean> @Keep track of all existing sub statuses, all static statuses will be added instantly, but dynamic statuses are added as they are loaded/added/set
 
+-- Entry in statuses/registry.lua
+---@class StatusType
+---@field multi? boolean @One entry per substance, ex. high.cocaine
+---@field reversed? boolean @Starts at 100.0 and counts down, ex. hunger
+---@field values? table<string, any> @Extra values every entry holds next to `value`
+
+-- Hook overrides for RegisterStatusType, omitted hooks use the defaults
+---@class StatusFunctions
+---@field onTick? function | false
+---@field onAdd? function
+---@field onRemove? function
+---@field onSet? function | false
+---@field onReset? function
+---@field onSoftReset? function
+
 ---@class DirectEffectInput : DirectEffect
 ---@field name QueueKey
 

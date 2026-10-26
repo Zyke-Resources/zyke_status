@@ -38,8 +38,8 @@ end
 -- TODO: Some addSatisfaction
 -- Also, reset satisfaction or something when addiction is draining
 
-RegisterStatusType(primary, true, {value = 100.0, addiction = 0.0},
-{
+-- Hook overrides, registered by statuses/registry.lua
+return {
     -- The addiction onTick looks a little different from the default format
     onTick = function(players)
         for i = 1, #players do
@@ -116,6 +116,8 @@ RegisterStatusType(primary, true, {value = 100.0, addiction = 0.0},
 
         return true
     end,
+    -- Satisfaction follows the addiction level, setting it alone would leave the two out of sync
+    onSet = false,
     onReset = function(plyId, statusNames)
         local secondary = statusNames[2] or primary
 
@@ -137,4 +139,4 @@ RegisterStatusType(primary, true, {value = 100.0, addiction = 0.0},
 
         return true
     end
-})
+}

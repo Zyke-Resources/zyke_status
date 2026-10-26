@@ -107,34 +107,10 @@ end)
 
 Wait(1000)
 
-local reversedStatuses = GetReversedStatuses()
 for status, values in pairs(Cache.existingStatuses) do
-    baseValues[status] = {}
-
-    -- Iterate the defined statuses where baseValues is defined to be above 0
-
-    -- Always skip addiction, since that should not be part of the default stats
-    baseValues[status].values = {}
-    if (status ~= "addiction") then
-        for key, baseValue in pairs(values.baseValues) do
-            if (
-                reversedStatuses[status] == true and baseValue > 0.0
-            ) then
-                for secName, statusSett in pairs(Config.Status[status]) do
-                    local _secName = values.multi == false and status or secName
-
-                    if (baseValues[status].values[_secName] == nil) then
-                        baseValues[status].values[_secName] = {}
-                    end
-
-                    baseValues[status].values[_secName][key] = baseValue
-                end
-            end
-        end
-    end
-
-    if (Z.table.count(baseValues[status].values) == 0) then
-        baseValues[status] = nil
+    -- Reversed statuses start full so every character has them, multi statuses only exist once a substance is added
+    if (IsStatusReversed(status) and not values.multi) then
+        baseValues[status] = {values = {[status] = Z.table.copy(values.baseValues)}}
     end
 end
 

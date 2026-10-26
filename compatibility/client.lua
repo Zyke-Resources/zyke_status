@@ -38,7 +38,7 @@ end)
 ---@diagnostic disable-next-line: duplicate-set-field
 local function convertStatus(name)
     local useDummyReturn = Config.Settings.backwardsCompatibility.dummyReturn
-    local dummyReturnVal = GetReversedStatuses()[name] == true and 100.0 or 0.0
+    local dummyReturnVal = IsStatusReversed(name) and 100.0 or 0.0
     local defaultReturn = useDummyReturn and {name = name, val = dummyReturnVal * 10000, percent = dummyReturnVal, getPercent = function() return dummyReturnVal end} or nil
 
     local data = Cache.statuses

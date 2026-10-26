@@ -33,26 +33,7 @@ loader {
 
     -- Statuses, we register these early because they have no dependencies except the Cache existing
     "server/register_statuses.lua",
-    "shared:statuses/addiction/config.lua",
-    "statuses/addiction/server.lua",
-
-    "shared:statuses/caffeine/config.lua",
-    "statuses/caffeine/server.lua",
-
-    "shared:statuses/drunk/config.lua",
-    "statuses/drunk/server.lua",
-
-    "shared:statuses/high/config.lua",
-    "statuses/high/server.lua",
-
-    "shared:statuses/hunger/config.lua",
-    "statuses/hunger/server.lua",
-
-    "shared:statuses/stress/config.lua",
-    "statuses/stress/server.lua",
-
-    "shared:statuses/thirst/config.lua",
-    "statuses/thirst/server.lua",
+    "shared:statuses/registry.lua",
 
     "server/functions.lua",
 

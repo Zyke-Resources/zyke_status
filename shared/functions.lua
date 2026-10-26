@@ -54,16 +54,11 @@ function IsEffectEnabled(name)
     return settings[name] ~= false
 end
 
--- These statuses have reversed values, 100.0 being the starting point
-local reversed = {
-    ["addiction"] = true,
-    ["hunger"] = true,
-    ["thirst"] = true,
-}
-
----@return {[string]: boolean}
-function GetReversedStatuses()
-    return reversed
+-- Reversed statuses start at 100.0 and count down, set per status in statuses/registry.lua
+---@param name string
+---@return boolean
+function IsStatusReversed(name)
+    return StatusTypes[name]?.reversed == true
 end
 
 -- Checks the threshold and if you should run the effect
@@ -77,7 +72,7 @@ function GetEffectThreshold(name, statusData)
 
     if (not settings or not settings.effect) then return -1 end
 
-    if (reversed[primary]) then
+    if (IsStatusReversed(primary)) then
         for i = #settings.effect, 1, -1 do
             if (statusData.value <= settings.effect[i].threshold) then
                 return i
@@ -100,7 +95,9 @@ end
 function EnsureEffectThresholdOrder()
     for key, subValues in pairs(Config.Status) do
         for subName, values in pairs(subValues) do
-            if (reversed[key]) then
+            if (not values.effect) then goto continue end
+
+            if (IsStatusReversed(key)) then
                 table.sort(values.effect, function(a, b)
                     return a.threshold > b.threshold
                 end)
@@ -115,9 +112,8 @@ function EnsureEffectThresholdOrder()
                     Z.debug(("^1[WARNING] ^3You have multiple threshold effects registered at the same threshold. Please adjust the values to avoid issues. Status: %s.%s^7"):format(key, subName))
                 end
             end
+
+            ::continue::
         end
     end
 end
-
-Wait(100)
-EnsureEffectThresholdOrder()
