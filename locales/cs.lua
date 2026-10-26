@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Hladovíte.", type = "error"},
     ["hunger4"] = {msg = "Umíráte hlady.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Začínáte pociťovat silnou touhu.", type = "info"},
+    ["withdrawal2"] = {msg = "Vaši touhu je čím dál těžší ignorovat.", type = "error"},
+    ["withdrawal3"] = {msg = "Trpíte abstinenčními příznaky.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Neplatná částka.", type = "error"},
     ["incorrectAction"] = {msg = "Nesprávný vstup akce", type = "error"},

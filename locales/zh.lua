@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "你快要饿死了。", type = "error"},
     ["hunger4"] = {msg = "你正在因饥饿而濒临死亡。", type = "error"},
 
+    ["withdrawal1"] = {msg = "你开始感到一阵渴求。", type = "info"},
+    ["withdrawal2"] = {msg = "这种渴求越来越难以忽视。", type = "error"},
+    ["withdrawal3"] = {msg = "你正在经历戒断反应。", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "金额无效。", type = "error"},
     ["incorrectAction"] = {msg = "操作输入不正确", type = "error"},

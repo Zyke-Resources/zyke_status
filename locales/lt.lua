@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Jūs badaujate.", type = "error"},
     ["hunger4"] = {msg = "Mirštate iš bado.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Pradedate jausti stiprų potraukį.", type = "info"},
+    ["withdrawal2"] = {msg = "Potraukį darosi vis sunkiau ignoruoti.", type = "error"},
+    ["withdrawal3"] = {msg = "Jus kamuoja abstinencijos simptomai.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Neteisingas kiekis.", type = "error"},
     ["incorrectAction"] = {msg = "Neteisinga įvestis.", type = "error"},

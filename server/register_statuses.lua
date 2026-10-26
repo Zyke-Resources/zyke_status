@@ -1,6 +1,7 @@
+-- Rounds to the configured accuracy and keeps the value within 0.0-100.0
 ---@param value number
 ---@return number
-local function clampValue(value)
+function ClampStatusValue(value)
     value = Z.numbers.round(value, Config.Settings.decimalAccuracy)
 
     return math.max(0.0, math.min(100.0, value))
@@ -43,7 +44,7 @@ local function createDefaultFunctions(name, baseValues)
             local values, secondary = getValues(plyId, statusNames)
             if (not values) then return end
 
-            values[secondary].value = clampValue(values[secondary].value + amount)
+            values[secondary].value = ClampStatusValue(values[secondary].value + amount)
 
             return true
         end,
@@ -51,7 +52,7 @@ local function createDefaultFunctions(name, baseValues)
             local values, secondary = getValues(plyId, statusNames)
             if (not values) then return end
 
-            local value = clampValue(values[secondary].value - amount)
+            local value = ClampStatusValue(values[secondary].value - amount)
 
             if (value <= 0.0 and restsAtZero) then
                 values[secondary] = nil
@@ -65,7 +66,7 @@ local function createDefaultFunctions(name, baseValues)
             local values, secondary = getValues(plyId, statusNames)
             if (not values) then return end
 
-            local value = clampValue(amount)
+            local value = ClampStatusValue(amount)
             values[secondary].value = value
 
             return true, value

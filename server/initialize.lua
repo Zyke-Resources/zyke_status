@@ -45,6 +45,9 @@ local function initializePlayer(plyId)
     fetchStatusFromDatabase(plyId)
     EnsureDirectEffectsFromDatabase(plyId)
 
+    -- Only AddToStatus adds priority players, so loaded fast draining statuses would otherwise wait for the slow interval
+    if (ShouldBePriorityPlayer(plyId)) then AddPriorityPlayer(plyId) end
+
     SyncPlayerStatus(plyId, GetAllPrimaryStatuses())
 
     -- Naive init that runs after a while, to avoid timing issues

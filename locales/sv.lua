@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Du svälter.", type = "error"},
     ["hunger4"] = {msg = "Du håller på att dö av svält.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Du börjar känna ett sug.", type = "info"},
+    ["withdrawal2"] = {msg = "Suget blir svårt att ignorera.", type = "error"},
+    ["withdrawal3"] = {msg = "Du har abstinens.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Ogiltigt belopp.", type = "error"},
     ["incorrectAction"] = {msg = "Felaktig åtgärdsinmatning", type = "error"},

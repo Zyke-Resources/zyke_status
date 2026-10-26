@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Je verhongert.", type = "error"},
     ["hunger4"] = {msg = "Je sterft van de honger.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Je voelt een hunkering opkomen.", type = "info"},
+    ["withdrawal2"] = {msg = "Je hunkering wordt moeilijk te negeren.", type = "error"},
+    ["withdrawal3"] = {msg = "Je hebt last van ontwenningsverschijnselen.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Ongeldig bedrag.", type = "error"},
     ["incorrectAction"] = {msg = "Onjuiste actie-invoer", type = "error"},

@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Du verhungerst.", type = "error"},
     ["hunger4"] = {msg = "Du stirbst vor Hunger.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Du spürst, wie ein Verlangen aufkommt.", type = "info"},
+    ["withdrawal2"] = {msg = "Dein Verlangen lässt sich kaum noch ignorieren.", type = "error"},
+    ["withdrawal3"] = {msg = "Du hast Entzugserscheinungen.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Ungültiger Betrag.", type = "error"},
     ["incorrectAction"] = {msg = "Falsche Aktionseingabe", type = "error"},

@@ -21,6 +21,10 @@ return {
     ["hunger3"] = {msg = "Mori de foame.", type = "error"},
     ["hunger4"] = {msg = "Ești pe punctul de a muri de foame.", type = "error"},
 
+    ["withdrawal1"] = {msg = "Începi să simți o poftă puternică.", type = "info"},
+    ["withdrawal2"] = {msg = "Pofta devine tot mai greu de ignorat.", type = "error"},
+    ["withdrawal3"] = {msg = "Treci prin sevraj.", type = "error"},
+
     -- Dev command stuff
     ["invalidAmount"] = {msg = "Sumă invalidă.", type = "error"},
     ["incorrectAction"] = {msg = "Acțiune incorectă", type = "error"},

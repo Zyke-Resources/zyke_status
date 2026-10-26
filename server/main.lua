@@ -71,7 +71,9 @@ function PopulateStatusTimeout(primary)
     local subStatuses = Cache.existingStatuses[primary].subStatuses
     if (not subStatuses) then return end
 
-    statusTimeouts[primary] = {}
+    -- Keep existing timers, a new substance showing up should not delay the drain of the others
+    statusTimeouts[primary] = statusTimeouts[primary] or {}
+
     for secName in pairs(subStatuses) do
         if (statusTimeouts[primary][secName]) then goto continue end
 
